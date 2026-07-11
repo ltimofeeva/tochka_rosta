@@ -5,7 +5,22 @@ const navToggle = document.getElementById('navToggle');
 const mainNav = document.getElementById('mainNav');
 navToggle.addEventListener('click', () => mainNav.classList.toggle('open'));
 mainNav.addEventListener('click', e => {
-  if (e.target.tagName === 'A') mainNav.classList.remove('open');
+  if (e.target.tagName === 'A') { mainNav.classList.remove('open'); navDropdown.classList.remove('open'); }
+});
+
+/* ---------- Выпадающее меню «О продукте» ---------- */
+const navDropdown = document.getElementById('navDropdown');
+const navDropBtn = navDropdown.querySelector('.nav-drop-btn');
+navDropBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const open = navDropdown.classList.toggle('open');
+  navDropBtn.setAttribute('aria-expanded', open);
+});
+document.addEventListener('click', e => {
+  if (!navDropdown.contains(e.target)) {
+    navDropdown.classList.remove('open');
+    navDropBtn.setAttribute('aria-expanded', 'false');
+  }
 });
 
 /* ---------- Появление секций при скролле ---------- */

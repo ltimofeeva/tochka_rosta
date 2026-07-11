@@ -17,10 +17,16 @@
       <img src="assets/logo-full.png" alt="Точка роста АйТи" class="logo-img">
     </a>
     <nav class="main-nav" id="mainNav">
-      <a href="#problem">Проблема</a>
-      <a href="#module1">Картотека</a>
-      <a href="#module2">Помощник 24/7</a>
-      <a href="#module3">Анализ звонков</a>
+      <div class="nav-dropdown" id="navDropdown">
+        <button type="button" class="nav-drop-btn" aria-expanded="false">О продукте <span class="drop-caret">▾</span></button>
+        <div class="dropdown-menu">
+          <a href="#module1">Модуль 1: Мониторинг базы</a>
+          <a href="#module2">Модуль 2: Помощник 24/7</a>
+          <a href="#module3">Модуль 3: Анализ звонков</a>
+        </div>
+      </div>
+      <a href="#connect">Как подключить</a>
+      <a href="#pricing">Стоимость</a>
       <a href="#contacts">Контакты</a>
     </nav>
     <a href="tel:+79828540054" class="header-phone">8-982-854-00-54</a>
@@ -35,31 +41,26 @@
   <div class="container hero-inner">
     <div class="hero-text">
       <h1>Реактивируем<br>и&nbsp;возвращаем<br>ваших клиентов</h1>
-      <p class="hero-sub">Система на базе <strong>искусственного интеллекта</strong> для&nbsp;стоматологий:</p>
-      <ul class="hero-list">
-        <li>находит в вашей картотеке пациентов с&nbsp;незаконченным лечением</li>
-        <li>принимает обращения 24/7</li>
-        <li>повышает конверсию из обращений в&nbsp;запись</li>
-      </ul>
+      <p class="hero-sub">Система на базе <strong>искусственного интеллекта</strong> для&nbsp;стоматологий.</p>
       <p class="hero-accent">Без увеличения рекламного бюджета.</p>
       <div class="hero-actions">
         <a href="#module1" class="btn btn-primary">Посмотреть демо модулей</a>
         <a href="#contacts" class="btn btn-outline">Связаться с нами</a>
       </div>
     </div>
-    <div class="hero-visual" aria-hidden="true">
-      <div class="hero-card hc-1">
+    <div class="hero-visual">
+      <a class="hero-card hc-1" href="#module1">
         <span class="hc-icon">🗂</span>
-        <div><b>Картотека</b><small>возвращаем пациентов</small></div>
-      </div>
-      <div class="hero-card hc-2">
+        <div><b>Мониторинг базы клиентов</b><small>Возвращаем клиентов из базы с&nbsp;незаконченным лечением</small></div>
+      </a>
+      <a class="hero-card hc-2" href="#module2">
         <span class="hc-icon">🤖</span>
-        <div><b>Помощник 24/7</b><small>телефон и мессенджеры</small></div>
-      </div>
-      <div class="hero-card hc-3">
+        <div><b>Помощник 24/7</b><small>Оперативная обработка входящих обращений</small></div>
+      </a>
+      <a class="hero-card hc-3" href="#module3">
         <span class="hc-icon">📈</span>
-        <div><b>Анализ звонков</b><small>рост записи без затрат</small></div>
-      </div>
+        <div><b>Анализ звонков</b><small>Повышение конверсии и&nbsp;улучшение качества сервиса</small></div>
+      </a>
     </div>
   </div>
   <div class="wave" aria-hidden="true">
@@ -418,6 +419,59 @@
       <div class="safety-item">🔒 данные пациентов защищены по требованиям закона о персональных данных</div>
       <div class="safety-item">👁 любой разговор можно открыть и прочитать — полная прозрачность</div>
       <div class="safety-item">📊 отчёты по звонкам — инструмент роста команды</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Как подключить ===== -->
+<section class="section" id="connect">
+  <div class="container">
+    <h2>Как подключить</h2>
+    <p class="section-lead">Запуск не требует от клиники ничего сложного — основную работу берём на себя.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-icon">📩</div><b>Заявка</b><p>оставляете заявку — созваниваемся и показываем систему на живом демо</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">2</div><div class="step-icon">🔍</div><b>Анализ</b><p>смотрим вашу телефонию и картотеку, считаем точные цифры потерь</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">3</div><div class="step-icon">⚙️</div><b>Настройка</b><p>вы утверждаете фразы и правила общения — помощник говорит в стиле вашей клиники</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">4</div><div class="step-icon">🚀</div><b>Запуск</b><p>подключаем модули — по одному или все вместе — и сопровождаем работу</p></div>
+    </div>
+    <div class="callout">
+      <span class="callout-icon">💎</span>
+      <p><b>Каждый модуль можно запустить отдельно</b> — начните с того, где у клиники самые заметные потери.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Стоимость ===== -->
+<section class="section section-alt" id="pricing">
+  <div class="container">
+    <h2>Стоимость</h2>
+    <p class="section-lead">Стоимость зависит от набора модулей и размера клиники — рассчитываем индивидуально после анализа вашей телефонии и картотеки.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-icon">🗂</div>
+        <h3>Модуль 1</h3>
+        <p class="pricing-name">Мониторинг базы клиентов</p>
+        <p>Возвращаем клиентов из базы с незаконченным лечением</p>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-icon">🤖</div>
+        <h3>Модуль 2</h3>
+        <p class="pricing-name">Помощник 24/7</p>
+        <p>Оперативная обработка входящих обращений</p>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-icon">📈</div>
+        <h3>Модуль 3</h3>
+        <p class="pricing-name">Анализ звонков</p>
+        <p>Повышение конверсии и улучшение качества сервиса</p>
+      </div>
+    </div>
+    <div class="pricing-cta">
+      <p>Модули можно подключать по отдельности или вместе — вместе они дают максимальный эффект.</p>
+      <a href="#contacts" class="btn btn-primary">Узнать стоимость для вашей клиники</a>
     </div>
   </div>
 </section>
