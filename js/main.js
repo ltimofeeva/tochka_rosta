@@ -127,6 +127,7 @@ function selectPatient(i) {
     `<div><b>Пациент:</b> ${p.name} — ${p.proc.toLowerCase()}</div>` +
     p.brief.map(([k, v]) => `<div><b>${k}:</b> ${v}</div>`).join('');
   demo1Result.hidden = false;
+  document.querySelector('.demo1-body').classList.add('has-result');
   typeText(aiMessageText, p.message);
 }
 
@@ -134,6 +135,7 @@ demo1Start.addEventListener('click', () => {
   if (demo1Running) return;
   demo1Running = true;
   demo1Result.hidden = true;
+  document.querySelector('.demo1-body').classList.remove('has-result');
   demo1Start.disabled = true;
   let i = 0;
   demo1Status.textContent = 'ИИ просматривает картотеку…';

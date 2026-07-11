@@ -51,7 +51,7 @@
     <div class="hero-visual">
       <a class="hero-card hc-1" href="#module1">
         <span class="hc-icon">🗂</span>
-        <div><b>Мониторинг базы клиентов</b><small>Возвращаем клиентов из базы с&nbsp;незаконченным лечением</small></div>
+        <div><b>Мониторинг базы клиентов</b><small>Возвращаем клиентов с&nbsp;незаконченным лечением</small></div>
       </a>
       <a class="hero-card hc-2" href="#module2">
         <span class="hc-icon">🤖</span>
@@ -131,69 +131,45 @@
     <h2>Возвращаем пациентов <span class="accent-blue">из картотеки</span></h2>
     <p class="section-lead">У клиники в картотеке тысячи пациентов. За каждого из них уже заплачено — рекламой, временем, сервисом.</p>
 
-    <div class="module-columns">
-      <div class="module-info">
-        <h3 class="sub-blue">Что делает наш искусственный интеллект — простыми словами, это программа-помощник, которая:</h3>
-        <ul class="feature-list">
-          <li><span class="fl-icon">🔍</span> просматривает картотеку и находит пациентов, которые не закончили лечение: удалили зуб — не поставили новый, была консультация — лечение не началось</li>
-          <li><span class="fl-icon">💚</span> подбирает медицинский повод напомнить о себе — акцент именно на заботу о здоровье, а не «акцию»</li>
-          <li><span class="fl-icon">🧠</span> изучает историю общения с пациентом и находит подход именно к нему: одному важна цена и рассрочка, другому — «не больно», третьему — сроки</li>
-          <li><span class="fl-icon">🎧</span> передаёт тёплого клиента и рекомендации по общению администратору</li>
-        </ul>
-        <div class="callout callout-compact">
-          <span class="callout-icon">💎</span>
-          <p>Даже если вернутся 3–5 человек из каждой сотни таких пациентов — это десятки визитов с высоким чеком.</p>
-        </div>
-      </div>
+    <h3 class="sub-blue">Что делает наш искусственный интеллект — простыми словами, это программа-помощник, которая:</h3>
+    <div class="feature-tiles">
+      <div class="feature-tile"><span class="ft-icon">🔍</span><p>просматривает картотеку и находит пациентов, которые не закончили лечение: удалили зуб — не поставили новый, была консультация — лечение не началось</p></div>
+      <div class="feature-tile"><span class="ft-icon">💚</span><p>подбирает медицинский повод напомнить о себе — акцент именно на заботу о здоровье, а не «акцию»</p></div>
+      <div class="feature-tile"><span class="ft-icon">🧠</span><p>изучает историю общения с пациентом и находит подход именно к нему: одному важна цена и рассрочка, другому — «не больно», третьему — сроки</p></div>
+      <div class="feature-tile"><span class="ft-icon">🎧</span><p>передаёт тёплого клиента и рекомендации по общению администратору</p></div>
+    </div>
 
-      <!-- Демо 1: анализ картотеки -->
-      <div class="demo-panel" id="demo1">
-        <div class="demo-header">
-          <span class="demo-badge">Демо</span>
-          <h3>Как ИИ находит пациентов в картотеке</h3>
-        </div>
-        <div class="demo1-toolbar">
-          <button class="btn btn-primary btn-sm" id="demo1Start">▶ Запустить ИИ-анализ картотеки</button>
-          <span class="demo1-status" id="demo1Status">Картотека клиники — 6 карточек (фрагмент)</span>
-        </div>
-        <div class="demo1-body">
-          <table class="patients-table" id="patientsTable">
-            <thead>
-              <tr><th>Пациент</th><th>Последний визит</th><th>Процедура</th><th>Статус ИИ</th></tr>
-            </thead>
-            <tbody><!-- заполняется скриптом --></tbody>
-          </table>
-          <div class="demo1-result" id="demo1Result" hidden>
-            <div class="patient-brief" id="patientBrief"></div>
-            <div class="ai-message">
-              <div class="ai-message-head"><span>🤖</span> Сообщение, которое подготовил ИИ</div>
-              <p id="aiMessageText" class="typewriter"></p>
-            </div>
-            <p class="demo-note">Программа находит таких пациентов и готовит обращение — а решение, связываться ли, всегда остаётся за клиникой.</p>
+    <!-- Демо 1: анализ картотеки -->
+    <div class="demo-panel demo-panel--wide" id="demo1">
+      <div class="demo-header">
+        <span class="demo-badge">Демо</span>
+        <h3>Как ИИ находит пациентов в картотеке</h3>
+      </div>
+      <div class="demo1-toolbar">
+        <button class="btn btn-primary btn-sm" id="demo1Start">▶ Запустить ИИ-анализ картотеки</button>
+        <span class="demo1-status" id="demo1Status">Картотека клиники — 6 карточек (фрагмент)</span>
+      </div>
+      <div class="demo1-body">
+        <table class="patients-table" id="patientsTable">
+          <thead>
+            <tr><th>Пациент</th><th>Последний визит</th><th>Процедура</th><th>Статус ИИ</th></tr>
+          </thead>
+          <tbody><!-- заполняется скриптом --></tbody>
+        </table>
+        <div class="demo1-result" id="demo1Result" hidden>
+          <div class="patient-brief" id="patientBrief"></div>
+          <div class="ai-message">
+            <div class="ai-message-head"><span>🤖</span> Сообщение, которое подготовил ИИ</div>
+            <p id="aiMessageText" class="typewriter"></p>
           </div>
+          <p class="demo-note">Программа находит таких пациентов и готовит обращение — а решение, связываться ли, всегда остаётся за клиникой.</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ===== Пример модуля 1 ===== -->
-<section class="section section-alt">
-  <div class="container">
-    <h2>Пример: как это выглядит</h2>
-    <div class="example-grid">
-      <div class="example-rows">
-        <div class="ex-row"><span class="ex-ico">👤</span><p><b class="accent-blue">Пациент:</b> Иван П.</p></div>
-        <div class="ex-row"><span class="ex-ico">📅</span><p><b class="accent-blue">Был:</b> удаление зуба, июнь 2025</p></div>
-        <div class="ex-row"><span class="ex-ico">⚠️</span><p><b class="accent-blue">Не закончено:</b> новый зуб на место удалённого так и не поставлен</p></div>
-        <div class="ex-row"><span class="ex-ico">🛡</span><p><b class="accent-blue">Чем грозит откладывание:</b> соседние зубы смещаются, лечение дорожает</p></div>
-        <div class="ex-row"><span class="ex-ico">💬</span><p><b class="accent-blue">Повод связаться:</b> консультация по восстановлению</p></div>
-      </div>
-      <div class="example-msg">
-        <span class="ex-msg-ico">💬</span>
-        <p><b>Сообщение</b> — не «Вы давно у нас не были», а:</p>
-        <blockquote>«После удаления зуба важно не затягивать с восстановлением, чтобы не пошла нагрузка на соседние зубы. Подобрать удобное время для консультации?»</blockquote>
-      </div>
+    <div class="callout">
+      <span class="callout-icon">💎</span>
+      <p>Даже если вернутся 3–5 человек из каждой сотни таких пациентов — это десятки визитов с высоким чеком.</p>
     </div>
   </div>
 </section>
@@ -253,7 +229,7 @@
 <!-- ===== Калькулятор потерь ===== -->
 <section class="section section-alt" id="calculator">
   <div class="container">
-    <h2>Пример: сколько стоят <span class="accent-blue">неотвеченные звонки</span></h2>
+    <h2>Сколько стоят <span class="accent-blue">неотвеченные звонки</span></h2>
     <p class="section-lead">Подвигайте ползунки — подставьте цифры вашей клиники.</p>
     <div class="calc-grid">
       <div class="calc-controls">
@@ -339,45 +315,6 @@
   </div>
 </section>
 
-<!-- ===== Пример модуля 3 ===== -->
-<section class="section section-alt">
-  <div class="container">
-    <h2>Пример: цена одного разговора</h2>
-    <div class="conv-grid">
-      <div class="conv-card">
-        <h3 class="sub-blue">🎧 Разбор звонка</h3>
-        <ul class="conv-list">
-          <li><b>Обращение:</b> имплантация</li>
-          <li><b>Итог:</b> пациент не записался</li>
-          <li><b>Где потеряли:</b> администратор назвал цену — и замолчал, не предложил следующий шаг</li>
-          <li><b>Как надо:</b> «Точная стоимость зависит от диагностики — давайте начнём с консультации и снимка, это займёт 30 минут»</li>
-        </ul>
-      </div>
-      <div class="conv-card">
-        <h3 class="sub-blue">📈 Что даёт качество разговора</h3>
-        <p class="conv-base">400 отвеченных звонков в месяц:</p>
-        <div class="conv-compare">
-          <div class="conv-bar-row">
-            <span class="conv-bar-label">записывается 40&nbsp;%</span>
-            <div class="conv-bar"><div class="conv-bar-fill" style="--w:66%"></div></div>
-            <b>160 записей</b>
-          </div>
-          <div class="conv-bar-row">
-            <span class="conv-bar-label">записывается 60&nbsp;%</span>
-            <div class="conv-bar"><div class="conv-bar-fill conv-bar-fill--green" style="--w:100%"></div></div>
-            <b>240 записей</b>
-          </div>
-        </div>
-        <div class="conv-diff">💎 разница — <b>80 записей ≈ 1,2 млн ₽</b> в месяц</div>
-      </div>
-    </div>
-    <div class="callout">
-      <span class="callout-icon">🎯</span>
-      <p>Одна и та же клиника, одни и те же звонки. Разница — только в том, как построен разговор.</p>
-    </div>
-  </div>
-</section>
-
 <!-- ===== Как всё работает вместе ===== -->
 <section class="section" id="together">
   <div class="container">
@@ -403,7 +340,7 @@
 <!-- ===== Люди для людей + безопасность ===== -->
 <section class="section section-alt" id="safety">
   <div class="container">
-    <h2>Люди — для людей, рутина — для программы</h2>
+    <h2>Почему именно наш продукт</h2>
     <p class="section-lead">Искусственный интеллект берёт на себя <b class="accent-blue">рутину и контроль качества</b>, пока ваша команда занимается главным — живыми пациентами в клинике: встречает, заботится, создаёт комфорт.</p>
     <div class="safety-grid">
       <div class="safety-item">🚀 обрабатывает тысячи задач в минуту: звонки, сообщения, напоминания, записи — параллельно и без очереди</div>
@@ -447,31 +384,15 @@
 <!-- ===== Стоимость ===== -->
 <section class="section section-alt" id="pricing">
   <div class="container">
-    <h2>Стоимость</h2>
-    <p class="section-lead">Стоимость зависит от набора модулей и размера клиники — рассчитываем индивидуально после анализа вашей телефонии и картотеки.</p>
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="pricing-icon">🗂</div>
-        <h3>Модуль 1</h3>
-        <p class="pricing-name">Мониторинг базы клиентов</p>
-        <p>Возвращаем клиентов из базы с незаконченным лечением</p>
-      </div>
-      <div class="pricing-card">
-        <div class="pricing-icon">🤖</div>
-        <h3>Модуль 2</h3>
-        <p class="pricing-name">Помощник 24/7</p>
-        <p>Оперативная обработка входящих обращений</p>
-      </div>
-      <div class="pricing-card">
-        <div class="pricing-icon">📈</div>
-        <h3>Модуль 3</h3>
-        <p class="pricing-name">Анализ звонков</p>
-        <p>Повышение конверсии и улучшение качества сервиса</p>
-      </div>
+    <h2>Стоимость услуги</h2>
+    <div class="price-hero">
+      <div class="price-ruble">₽</div>
+      <div class="price-value">15 000 <span>рублей.</span></div>
     </div>
+    <p class="price-note">Подробнее условия уточняйте у менеджера.</p>
     <div class="pricing-cta">
       <p>Модули можно подключать по отдельности или вместе — вместе они дают максимальный эффект.</p>
-      <a href="#contacts" class="btn btn-primary">Узнать стоимость для вашей клиники</a>
+      <a href="#contacts" class="btn btn-primary">Связаться с менеджером</a>
     </div>
   </div>
 </section>
@@ -483,10 +404,10 @@
       <h2>Рады будем ответить на&nbsp;все ваши вопросы</h2>
       <a class="contact-line" href="tel:+79828540054"><span class="contact-ico">📞</span> 8-982-854-00-54</a>
       <a class="contact-line" href="mailto:TochkaRosta-it@mail.ru"><span class="contact-ico">✉️</span> TochkaRosta-it@mail.ru</a>
-      <p class="contacts-person">Евгений, «Точка роста АйТи»</p>
     </div>
-    <div class="contacts-logo">
-      <img src="assets/logo-mark.png" alt="" aria-hidden="true">
+    <div class="contacts-photo">
+      <img src="assets/evgeniy.jpg" alt="Евгений — Точка роста АйТи">
+      <p class="contacts-name">Евгений</p>
     </div>
   </div>
 </section>
