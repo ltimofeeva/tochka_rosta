@@ -31,65 +31,6 @@ const io = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 /* ============================================================
-   Автодемо в герое — зацикленный «видеоролик» анализа картотеки
-   ============================================================ */
-const HERO_ROWS = [
-  { name: 'Иван П.', proc: 'удаление зуба · июнь 2025', flag: true },
-  { name: 'Мария С.', proc: 'консультация · март 2025', flag: true },
-  { name: 'Ольга В.', proc: 'профгигиена · май 2026', flag: false },
-  { name: 'Алексей К.', proc: 'слепки для коронки · февраль 2026', flag: true },
-];
-const HERO_MSG = '«После удаления зуба важно не затягивать с восстановлением. Подобрать удобное время для консультации?»';
-
-const heroRowsEl = document.getElementById('heroDemoRows');
-const heroMsgEl = document.getElementById('heroDemoMsg');
-const heroTextEl = document.getElementById('heroDemoText');
-
-function heroBuildRows() {
-  heroRowsEl.innerHTML = HERO_ROWS.map(r =>
-    `<div class="hd-row"><span><b>${r.name}</b><small>${r.proc}</small></span><span class="badge badge-wait">—</span></div>`
-  ).join('');
-}
-
-function heroLoop() {
-  heroBuildRows();
-  heroMsgEl.classList.remove('show');
-  heroTextEl.textContent = '';
-  const rows = [...heroRowsEl.children];
-  let i = 0;
-  const scanNext = () => {
-    rows.forEach(r => r.classList.remove('scanning'));
-    if (i > 0) {
-      const prev = rows[i - 1], data = HERO_ROWS[i - 1];
-      prev.classList.toggle('flag', data.flag);
-      prev.querySelector('.badge').outerHTML = data.flag
-        ? '<span class="badge badge-flag">⚠ вернуть</span>'
-        : '<span class="badge badge-ok">✓ ок</span>';
-    }
-    if (i >= rows.length) { heroShowMsg(); return; }
-    rows[i].classList.add('scanning');
-    rows[i].querySelector('.badge').outerHTML = '<span class="badge badge-scan">анализ…</span>';
-    i++;
-    setTimeout(scanNext, 650);
-  };
-  setTimeout(scanNext, 700);
-}
-
-function heroShowMsg() {
-  heroMsgEl.classList.add('show');
-  let j = 0;
-  const t = setInterval(() => {
-    heroTextEl.textContent = HERO_MSG.slice(0, ++j);
-    if (j >= HERO_MSG.length) {
-      clearInterval(t);
-      setTimeout(heroLoop, 3800); // пауза и повтор «ролика»
-    }
-  }, 28);
-}
-
-heroLoop();
-
-/* ============================================================
    ДЕМО 1 — Возвращаем пациентов из картотеки
    ============================================================ */
 const PATIENTS = [
@@ -217,6 +158,85 @@ demo1Start.addEventListener('click', () => {
 });
 
 renderPatients('idle');
+
+/* ============================================================
+   Автодемо в герое — то же демо модуля 1, но проигрывается само
+   ============================================================ */
+const heroTbody = document.querySelector('#heroTable tbody');
+const heroStatus = document.getElementById('heroStatus');
+const heroResult = document.getElementById('heroResult');
+const heroBrief = document.getElementById('heroBrief');
+const heroMsgText = document.getElementById('heroMsgText');
+const heroFlagged = PATIENTS.map((p, i) => p.flagged ? i : -1).filter(i => i >= 0);
+let heroCycle = 0;
+let heroTypeTimer = null;
+
+/* та же отрисовка, что и в модуле 1: те же статусы и подсветка строк */
+function heroRender(state) {
+  heroTbody.innerHTML = '';
+  PATIENTS.forEach((p, i) => {
+    const tr = document.createElement('tr');
+    let badge = '<span class="badge badge-wait">ожидает</span>';
+    if (state === 'idle') badge = '<span class="badge badge-wait">—</span>';
+    else if (typeof state === 'number') {
+      if (i < state) badge = p.flagged
+        ? '<span class="badge badge-flag">⚠ незаконченное лечение</span>'
+        : '<span class="badge badge-ok">✓ лечение завершено</span>';
+      else if (i === state) { badge = '<span class="badge badge-scan">анализирую…</span>'; tr.classList.add('scanning'); }
+    } else if (state === 'done') {
+      badge = p.flagged
+        ? '<span class="badge badge-flag">⚠ незаконченное лечение</span>'
+        : '<span class="badge badge-ok">✓ лечение завершено</span>';
+    }
+    if ((state === 'done' || (typeof state === 'number' && i < state)) && p.flagged) tr.classList.add('flagged');
+    if ((state === 'done' || (typeof state === 'number' && i < state)) && !p.flagged) tr.classList.add('ok-row');
+    tr.innerHTML = `<td>${p.name}</td><td>${p.visit}</td><td>${p.proc}</td><td>${badge}</td>`;
+    heroTbody.appendChild(tr);
+  });
+}
+
+function heroShowPatient(idx) {
+  const p = PATIENTS[idx];
+  heroTbody.querySelectorAll('tr').forEach((tr, i) => tr.classList.toggle('active', i === idx));
+  heroBrief.innerHTML =
+    `<div><b>Пациент:</b> ${p.name} — ${p.proc.toLowerCase()}</div>` +
+    p.brief.map(([k, v]) => `<div><b>${k}:</b> ${v}</div>`).join('');
+  heroResult.hidden = false;
+  clearInterval(heroTypeTimer);
+  heroMsgText.textContent = '';
+  heroMsgText.classList.remove('done');
+  let j = 0;
+  heroTypeTimer = setInterval(() => {
+    heroMsgText.textContent = p.message.slice(0, ++j);
+    if (j >= p.message.length) {
+      clearInterval(heroTypeTimer);
+      heroMsgText.classList.add('done');
+      setTimeout(heroLoop, 4200); // пауза и повтор
+    }
+  }, 22);
+}
+
+function heroLoop() {
+  heroResult.hidden = true;
+  heroRender('idle');
+  heroStatus.textContent = 'ИИ просматривает картотеку…';
+  let i = 0;
+  const step = () => {
+    heroRender(i);
+    if (i >= PATIENTS.length) {
+      heroRender('done');
+      heroStatus.textContent = `Готово: найдено ${heroFlagged.length} пациента с незаконченным лечением`;
+      // каждый цикл — разбор следующего найденного пациента
+      heroShowPatient(heroFlagged[heroCycle++ % heroFlagged.length]);
+      return;
+    }
+    i++;
+    setTimeout(step, 550);
+  };
+  setTimeout(step, 900);
+}
+
+heroLoop();
 
 /* ============================================================
    ДЕМО 2 — Умный помощник в мессенджере

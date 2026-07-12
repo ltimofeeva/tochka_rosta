@@ -135,35 +135,30 @@ h3 { font-size: 19px; }
 }
 .hero-chip:hover { background: rgba(255, 255, 255, .28); }
 
-/* автодемо в герое: ИИ-анализ картотеки «как видео» */
+/* автодемо в герое: демо модуля 1, проигрывается само */
 .hero-visual { position: relative; }
 .hero-demo {
   background: rgba(255, 255, 255, .97); border-radius: var(--radius);
-  box-shadow: 0 18px 50px rgba(9, 40, 80, .35); padding: 18px 20px;
+  box-shadow: 0 18px 50px rgba(9, 40, 80, .35); padding: 16px 18px;
   animation: floaty 6s ease-in-out infinite;
+  color: var(--ink); /* сброс белого цвета текста героя */
 }
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 .hero-demo-head {
   display: flex; align-items: center; gap: 10px; color: var(--navy);
-  font-weight: 700; font-size: 15px; margin-bottom: 14px;
+  font-weight: 700; font-size: 15px; margin-bottom: 10px;
 }
-.hero-demo-rows { display: grid; gap: 8px; }
-.hd-row {
-  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
-  background: var(--bg); border-radius: 10px; padding: 9px 12px;
-  font-size: 13.5px; color: var(--ink); transition: background .3s;
-}
-.hd-row small { color: var(--ink-soft); display: block; font-size: 12px; }
-.hd-row.scanning { background: var(--blue-light); }
-.hd-row.flag { background: #fff3e0; }
-.hero-demo-msg {
-  margin-top: 12px; background: var(--blue-light); border-radius: 12px; padding: 12px 14px;
-  opacity: 0; transform: translateY(6px); transition: opacity .35s, transform .35s;
-  min-height: 96px;
-}
-.hero-demo-msg.show { opacity: 1; transform: none; }
-.hdm-head { font-weight: 700; color: var(--navy); font-size: 13px; margin-bottom: 6px; }
-.hero-demo-msg p { font-size: 13.5px; color: var(--navy); line-height: 1.45; }
+.hero-demo .demo1-status { display: block; margin-bottom: 8px; font-size: 12.5px; }
+/* компактная версия той же таблицы и разбора, что в модуле 1 */
+.hero-demo .patients-table { font-size: 12px; }
+.hero-demo .patients-table th { padding: 5px 6px; font-size: 10px; }
+.hero-demo .patients-table td { padding: 5px 6px; }
+.hero-demo .badge { font-size: 10.5px; padding: 2px 8px; }
+.hero-result { margin-top: 12px; border-top: 2px solid var(--line); padding-top: 10px; }
+.hero-demo .patient-brief { font-size: 12px; gap: 3px; margin-bottom: 10px; }
+.hero-demo .ai-message { padding: 10px 12px; }
+.hero-demo .ai-message-head { font-size: 12px; margin-bottom: 5px; }
+.hero-demo .ai-message p { font-size: 12.5px; min-height: 36px; }
 
 .wave { position: absolute; left: 0; right: 0; bottom: -1px; line-height: 0; }
 .wave svg { width: 100%; height: 90px; display: block; }

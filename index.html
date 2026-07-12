@@ -55,11 +55,20 @@
     </div>
     <div class="hero-visual" aria-hidden="true">
       <div class="hero-demo">
-        <div class="hero-demo-head"><span class="demo-badge">Демо</span> ИИ-анализ картотеки</div>
-        <div class="hero-demo-rows" id="heroDemoRows"><!-- заполняется скриптом --></div>
-        <div class="hero-demo-msg" id="heroDemoMsg">
-          <div class="hdm-head">🤖 Сообщение для пациента готово</div>
-          <p id="heroDemoText"></p>
+        <div class="hero-demo-head"><span class="demo-badge">Демо</span> Как ИИ находит пациентов в картотеке</div>
+        <div class="demo1-status" id="heroStatus">Картотека клиники — 6 карточек (фрагмент)</div>
+        <table class="patients-table" id="heroTable">
+          <thead>
+            <tr><th>Пациент</th><th>Последний визит</th><th>Процедура</th><th>Статус ИИ</th></tr>
+          </thead>
+          <tbody><!-- заполняется скриптом --></tbody>
+        </table>
+        <div class="hero-result" id="heroResult" hidden>
+          <div class="patient-brief" id="heroBrief"></div>
+          <div class="ai-message">
+            <div class="ai-message-head"><span>🤖</span> Сообщение, которое подготовил ИИ</div>
+            <p id="heroMsgText" class="typewriter"></p>
+          </div>
         </div>
       </div>
     </div>
