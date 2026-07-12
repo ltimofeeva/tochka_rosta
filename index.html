@@ -47,20 +47,21 @@
         <a href="#module1" class="btn btn-primary">Посмотреть демо модулей</a>
         <a href="#contacts" class="btn btn-outline">Связаться с нами</a>
       </div>
+      <div class="hero-modules">
+        <a href="#module1" class="hero-chip">🗂 Мониторинг базы клиентов</a>
+        <a href="#module2" class="hero-chip">🤖 Помощник 24/7</a>
+        <a href="#module3" class="hero-chip">📈 Анализ звонков</a>
+      </div>
     </div>
-    <div class="hero-visual">
-      <a class="hero-card hc-1" href="#module1">
-        <span class="hc-icon">🗂</span>
-        <div><b>Мониторинг базы клиентов</b><small>Возвращаем клиентов с&nbsp;незаконченным лечением</small></div>
-      </a>
-      <a class="hero-card hc-2" href="#module2">
-        <span class="hc-icon">🤖</span>
-        <div><b>Помощник 24/7</b><small>Оперативная обработка входящих обращений</small></div>
-      </a>
-      <a class="hero-card hc-3" href="#module3">
-        <span class="hc-icon">📈</span>
-        <div><b>Анализ звонков</b><small>Повышение конверсии и&nbsp;улучшение качества сервиса</small></div>
-      </a>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-demo">
+        <div class="hero-demo-head"><span class="demo-badge">Демо</span> ИИ-анализ картотеки</div>
+        <div class="hero-demo-rows" id="heroDemoRows"><!-- заполняется скриптом --></div>
+        <div class="hero-demo-msg" id="heroDemoMsg">
+          <div class="hdm-head">🤖 Сообщение для пациента готово</div>
+          <p id="heroDemoText"></p>
+        </div>
+      </div>
     </div>
   </div>
   <div class="wave" aria-hidden="true">
@@ -68,45 +69,22 @@
   </div>
 </section>
 
-<!-- ===== Проблема ===== -->
-<section class="section" id="problem">
-  <div class="container">
-    <h2>Главная проблема</h2>
-    <p class="section-lead">Вы уже заплатили за пациента — рекламой, работой врача, сервисом, доверием.
-      Но если пациент не долечился, не дозвонился или не записался повторно —
-      клиника теряет эти деньги второй раз.</p>
-
-    <h3 class="sub-blue">Почему это особенно чувствительно сейчас:</h3>
-    <div class="reason-grid">
-      <div class="reason"><span class="reason-icon">📈</span> новый пациент обходится всё дороже</div>
-      <div class="reason"><span class="reason-icon">🗓</span> на дорогое лечение люди решаются дольше</div>
-      <div class="reason"><span class="reason-icon">💬</span> каждый звонок и сообщение стали ценнее</div>
-      <div class="reason"><span class="reason-icon">👩‍💼</span> найти и обучить хорошего администратора — долго и дорого</div>
-    </div>
-
-    <div class="callout">
-      <span class="callout-icon">💎</span>
-      <p>Дешевле перестать терять тех, кто уже есть.</p>
-    </div>
-  </div>
-</section>
-
 <!-- ===== Три зоны потерь ===== -->
 <section class="section section-alt">
   <div class="container">
     <h2>Три зоны потерь</h2>
-    <p class="section-lead">Деньги теряются ещё до того, как клиника платит за новую рекламу.</p>
+    <p class="section-lead">Вы уже заплатили за пациента. Если он не долечился, не дозвонился или не записался — клиника теряет эти деньги второй раз.</p>
     <div class="zones-grid">
       <a class="zone-card" href="#module1">
         <div class="zone-icon zone-icon--navy">🗂</div>
         <h3>Картотека</h3>
-        <p>Пациенты, которые не закончили лечение — и о них забыли.</p>
+        <p>Пациенты не закончили лечение — и о них забыли.</p>
         <span class="zone-more">Модуль 1 →</span>
       </a>
       <a class="zone-card" href="#module2">
         <div class="zone-icon zone-icon--blue">📞</div>
         <h3>Телефон и&nbsp;мессенджеры</h3>
-        <p>Звонки и сообщения, на которые никто не успел ответить. Или отвечали дольше, чем конкуренты, — и пациент ушёл к ним.</p>
+        <p>Звонки и сообщения без ответа — пациент ушёл к конкурентам.</p>
         <span class="zone-more">Модуль 2 →</span>
       </a>
       <a class="zone-card" href="#module3">
@@ -118,8 +96,7 @@
     </div>
     <div class="callout">
       <span class="callout-icon">💎</span>
-      <p><b>Мы закрываем все три зоны потерь — от первого обращения до визита.</b><br>
-      Это улучшение всей воронки продаж клиники: на каждом шаге до записи доходит больше пациентов.</p>
+      <p><b>Мы закрываем все три зоны — от первого обращения до визита.</b> На каждом шаге до записи доходит больше пациентов.</p>
     </div>
   </div>
 </section>
@@ -129,14 +106,13 @@
   <div class="container">
     <div class="module-tag">Модуль 1</div>
     <h2>Возвращаем пациентов <span class="accent-blue">из картотеки</span></h2>
-    <p class="section-lead">У клиники в картотеке тысячи пациентов. За каждого из них уже заплачено — рекламой, временем, сервисом.</p>
+    <p class="section-lead">В картотеке тысячи пациентов, за каждого уже заплачено. Программа возвращает их в кресло:</p>
 
-    <h3 class="sub-blue">Что делает наш искусственный интеллект — простыми словами, это программа-помощник, которая:</h3>
     <div class="feature-tiles">
-      <div class="feature-tile"><span class="ft-icon">🔍</span><p>просматривает картотеку и находит пациентов, которые не закончили лечение: удалили зуб — не поставили новый, была консультация — лечение не началось</p></div>
-      <div class="feature-tile"><span class="ft-icon">💚</span><p>подбирает медицинский повод напомнить о себе — акцент именно на заботу о здоровье, а не «акцию»</p></div>
-      <div class="feature-tile"><span class="ft-icon">🧠</span><p>изучает историю общения с пациентом и находит подход именно к нему: одному важна цена и рассрочка, другому — «не больно», третьему — сроки</p></div>
-      <div class="feature-tile"><span class="ft-icon">🎧</span><p>передаёт тёплого клиента и рекомендации по общению администратору</p></div>
+      <div class="feature-tile"><span class="ft-icon">🔍</span><p>находит пациентов с незаконченным лечением: удалили зуб — не поставили новый</p></div>
+      <div class="feature-tile"><span class="ft-icon">💚</span><p>подбирает медицинский повод напомнить о себе — забота о здоровье, а не «акция»</p></div>
+      <div class="feature-tile"><span class="ft-icon">🧠</span><p>находит подход к каждому: одному важна цена и рассрочка, другому — «не больно»</p></div>
+      <div class="feature-tile"><span class="ft-icon">🎧</span><p>передаёт тёплого клиента администратору вместе с рекомендациями по общению</p></div>
     </div>
 
     <!-- Демо 1: анализ картотеки -->
@@ -169,7 +145,7 @@
 
     <div class="callout">
       <span class="callout-icon">💎</span>
-      <p>Даже если вернутся 3–5 человек из каждой сотни таких пациентов — это десятки визитов с высоким чеком.</p>
+      <p>Даже 3–5 вернувшихся из каждой сотни — это десятки визитов с высоким чеком.</p>
     </div>
   </div>
 </section>
@@ -184,16 +160,16 @@
     <div class="module-columns">
       <div class="module-info">
         <ul class="feature-list">
-          <li><span class="fl-icon">⚡️</span> оперативно решает простые вопросы: цены, часы работы, врачи, подготовка к приёму — пациенту не нужно ждать</li>
-          <li><span class="fl-icon">🗓</span> записывает на приём сам, без участия человека — запись сразу попадает в расписание клиники</li>
-          <li><span class="fl-icon">🔔</span> напоминает о визите и просит подтвердить — меньше «забыл и не пришёл», меньше простоя врача и кресла</li>
+          <li><span class="fl-icon">⚡️</span> мгновенно отвечает на простые вопросы: цены, часы работы, врачи</li>
+          <li><span class="fl-icon">🗓</span> записывает на приём сам — запись сразу в расписании клиники</li>
+          <li><span class="fl-icon">🔔</span> напоминает о визите — меньше «забыл и не пришёл»</li>
           <li><span class="fl-icon">🦷</span> пациента с острой болью ставит в ближайшее свободное время</li>
-          <li><span class="fl-icon">🎧</span> снимает нагрузку с администраторов в час пик: помощник отвечает параллельно всем — никто не висит на линии и не уходит к конкурентам</li>
-          <li><span class="fl-icon">📱</span> удобен молодым пациентам: новое поколение не любит звонить — им проще написать</li>
+          <li><span class="fl-icon">🎧</span> в час пик отвечает всем параллельно — никто не висит на линии и не уходит к конкурентам</li>
+          <li><span class="fl-icon">📱</span> молодым проще написать, чем позвонить — в переписке помощник так же хорош</li>
         </ul>
         <div class="callout callout-compact">
           <span class="callout-icon">🛡</span>
-          <p><b>Почему пациент не почувствует разницы:</b> говорит вежливо и в стиле вашей клиники · отвечает только по правилам, которые вы сами утвердили · не даёт медицинских советов · сложные вопросы сразу передаёт живому администратору</p>
+          <p><b>Пациент не почувствует разницы:</b> говорит в стиле вашей клиники · только по утверждённым вами правилам · не даёт медицинских советов · сложные вопросы передаёт живому администратору</p>
         </div>
       </div>
 
@@ -269,25 +245,18 @@
   <div class="container">
     <div class="module-tag">Модуль 3</div>
     <h2>Анализ звонков — <span class="accent-blue">рост записи без новых затрат</span></h2>
-    <p class="section-lead">Это поиск слабых мест и рост качества сервиса. Руководитель физически успевает прослушать 2–5 звонков из ста. Программа прослушивает все сто и показывает понятным языком:</p>
+    <p class="section-lead">Руководитель успевает прослушать 2–5 звонков из ста. Программа — все сто, и показывает понятным языком:</p>
 
-    <div class="module-columns">
-      <div class="module-info">
-        <ul class="feature-list">
-          <li><span class="fl-icon">🗓</span> где пациент был готов записаться, но ему не предложили время</li>
-          <li><span class="fl-icon">❓</span> какие сомнения пациентов чаще всего срывают запись — и как на них отвечать</li>
-          <li><span class="fl-icon">👩‍💼</span> кто из администраторов теряет дорогие обращения</li>
-          <li><span class="fl-icon">💬</span> какие слова и фразы реально доводят до записи — используем эти слова и улучшаем сценарии разговора и для живых администраторов, и для умного помощника</li>
-          <li><span class="fl-icon">🎓</span> чему учить команду на этой неделе — не абстрактный тренинг, а разбор собственных разговоров</li>
-        </ul>
-        <div class="callout callout-compact">
-          <span class="callout-icon">💎</span>
-          <p>Итог для пациентов — заметно лучше сервис: с ними разговаривают внимательнее, понятнее и по делу.</p>
-        </div>
-      </div>
+    <div class="feature-tiles feature-tiles--5">
+      <div class="feature-tile"><span class="ft-icon">🗓</span><p>где пациент был готов записаться, но ему не предложили время</p></div>
+      <div class="feature-tile"><span class="ft-icon">❓</span><p>какие сомнения срывают запись — и как на них отвечать</p></div>
+      <div class="feature-tile"><span class="ft-icon">👩‍💼</span><p>кто из администраторов теряет дорогие обращения</p></div>
+      <div class="feature-tile"><span class="ft-icon">💬</span><p>какие фразы реально доводят до записи — включаем их в сценарии</p></div>
+      <div class="feature-tile"><span class="ft-icon">🎓</span><p>чему учить команду — разбор своих разговоров, а не абстрактный тренинг</p></div>
+    </div>
 
-      <!-- Демо 3: дашборд анализа звонков -->
-      <div class="demo-panel demo-panel--wide" id="demo3">
+    <!-- Демо 3: дашборд анализа звонков -->
+    <div class="demo-panel demo-panel--wide" id="demo3">
         <div class="demo-header">
           <span class="demo-badge">Демо</span>
           <h3>Отчёт по звонкам за неделю</h3>
@@ -309,8 +278,12 @@
         <div class="dash-chart">
           <div class="chart-title">Почему срывается запись — по всем звонкам недели</div>
           <div class="hbar-chart" id="reasonsChart"><!-- заполняется скриптом --></div>
-        </div>
       </div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">💎</span>
+      <p>Итог — заметно лучше сервис: с пациентами разговаривают внимательнее и по делу.</p>
     </div>
   </div>
 </section>
@@ -322,7 +295,7 @@
     <div class="steps">
       <div class="step"><div class="step-num">1</div><div class="step-icon">🗂</div><b>Картотека</b><p>находим пациентов с незаконченным лечением</p></div>
       <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">2</div><div class="step-icon">🤖</div><b>Умный помощник</b><p>приглашает, отвечает и записывает — автоматически, без ручной рутины</p></div>
+      <div class="step"><div class="step-num">2</div><div class="step-icon">🤖</div><b>Умный помощник</b><p>приглашает, отвечает и записывает — автоматически</p></div>
       <div class="step-arrow">→</div>
       <div class="step"><div class="step-num">3</div><div class="step-icon">👨‍⚕️</div><b>Живой администратор</b><p>ведёт сложные и дорогие обращения</p></div>
       <div class="step-arrow">→</div>
@@ -341,11 +314,11 @@
 <section class="section section-alt" id="safety">
   <div class="container">
     <h2>Почему именно наш продукт</h2>
-    <p class="section-lead">Искусственный интеллект берёт на себя <b class="accent-blue">рутину и контроль качества</b>, пока ваша команда занимается главным — живыми пациентами в клинике: встречает, заботится, создаёт комфорт.</p>
+    <p class="section-lead">ИИ берёт на себя <b class="accent-blue">рутину и контроль качества</b> — команда занимается живыми пациентами.</p>
     <div class="safety-grid">
-      <div class="safety-item">🚀 обрабатывает тысячи задач в минуту: звонки, сообщения, напоминания, записи — параллельно и без очереди</div>
-      <div class="safety-item">🧠 не устаёт, не забывает, не ошибается от усталости — человеческий фактор уходит из рутины</div>
-      <div class="safety-item">❤️ ни одно решение о лечении и ни один сложный разговор не остаются без человека</div>
+      <div class="safety-item">🚀 тысячи задач в минуту: звонки, сообщения, напоминания — параллельно и без очереди</div>
+      <div class="safety-item">🧠 не устаёт и не забывает — человеческий фактор уходит из рутины</div>
+      <div class="safety-item">❤️ решения о лечении и сложные разговоры всегда остаются за человеком</div>
     </div>
 
     <h3 class="sub-blue safety-sub">Почему это безопасно для клиники</h3>
@@ -364,19 +337,19 @@
 <section class="section" id="connect">
   <div class="container">
     <h2>Как подключить</h2>
-    <p class="section-lead">Запуск не требует от клиники ничего сложного — основную работу берём на себя.</p>
+    <p class="section-lead">Основную работу берём на себя.</p>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-icon">📩</div><b>Заявка</b><p>оставляете заявку — созваниваемся и показываем систему на живом демо</p></div>
+      <div class="step"><div class="step-num">1</div><div class="step-icon">📩</div><b>Заявка</b><p>созваниваемся и показываем систему на живом демо</p></div>
       <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">2</div><div class="step-icon">🔍</div><b>Анализ</b><p>смотрим вашу телефонию и картотеку, считаем точные цифры потерь</p></div>
+      <div class="step"><div class="step-num">2</div><div class="step-icon">🔍</div><b>Анализ</b><p>считаем точные цифры потерь по вашей телефонии и картотеке</p></div>
       <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">3</div><div class="step-icon">⚙️</div><b>Настройка</b><p>вы утверждаете фразы и правила общения — помощник говорит в стиле вашей клиники</p></div>
+      <div class="step"><div class="step-num">3</div><div class="step-icon">⚙️</div><b>Настройка</b><p>вы утверждаете фразы — помощник говорит в стиле вашей клиники</p></div>
       <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">4</div><div class="step-icon">🚀</div><b>Запуск</b><p>подключаем модули — по одному или все вместе — и сопровождаем работу</p></div>
+      <div class="step"><div class="step-num">4</div><div class="step-icon">🚀</div><b>Запуск</b><p>подключаем модули и сопровождаем работу</p></div>
     </div>
     <div class="callout">
       <span class="callout-icon">💎</span>
-      <p><b>Каждый модуль можно запустить отдельно</b> — начните с того, где у клиники самые заметные потери.</p>
+      <p><b>Каждый модуль можно запустить отдельно</b> — начните там, где потери заметнее всего.</p>
     </div>
   </div>
 </section>

@@ -126,32 +126,47 @@ h3 { font-size: 19px; }
 .btn-outline:hover { background: rgba(255, 255, 255, .15); }
 .btn-sm { padding: 10px 18px; font-size: 14px; }
 
-.hero-visual { display: grid; gap: 16px; position: relative; }
-.hero-card {
-  display: flex; align-items: center; gap: 14px;
-  background: rgba(255, 255, 255, .96); color: var(--navy);
-  border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow);
-  animation: floaty 5s ease-in-out infinite;
-  text-decoration: none; transition: box-shadow .2s;
+.hero-modules { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.hero-chip {
+  display: inline-block; padding: 9px 18px; border-radius: 999px;
+  background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .45);
+  color: #fff; text-decoration: none; font-size: 14px; font-weight: 600;
+  transition: background .15s;
 }
-.hero-card:hover { box-shadow: 0 10px 32px rgba(27, 58, 102, .22); }
-.hero-card small { display: block; color: var(--ink-soft); font-weight: 400; font-size: 13.5px; line-height: 1.4; margin-top: 2px; }
-.hero-card b { font-size: 17px; }
-.hc-icon { font-size: 30px; }
-.hc-2 { margin-left: 34px; animation-delay: 1.2s; }
-.hc-3 { margin-left: 10px; animation-delay: 2.4s; }
+.hero-chip:hover { background: rgba(255, 255, 255, .28); }
+
+/* автодемо в герое: ИИ-анализ картотеки «как видео» */
+.hero-visual { position: relative; }
+.hero-demo {
+  background: rgba(255, 255, 255, .97); border-radius: var(--radius);
+  box-shadow: 0 18px 50px rgba(9, 40, 80, .35); padding: 18px 20px;
+  animation: floaty 6s ease-in-out infinite;
+}
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+.hero-demo-head {
+  display: flex; align-items: center; gap: 10px; color: var(--navy);
+  font-weight: 700; font-size: 15px; margin-bottom: 14px;
+}
+.hero-demo-rows { display: grid; gap: 8px; }
+.hd-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+  background: var(--bg); border-radius: 10px; padding: 9px 12px;
+  font-size: 13.5px; color: var(--ink); transition: background .3s;
+}
+.hd-row small { color: var(--ink-soft); display: block; font-size: 12px; }
+.hd-row.scanning { background: var(--blue-light); }
+.hd-row.flag { background: #fff3e0; }
+.hero-demo-msg {
+  margin-top: 12px; background: var(--blue-light); border-radius: 12px; padding: 12px 14px;
+  opacity: 0; transform: translateY(6px); transition: opacity .35s, transform .35s;
+  min-height: 96px;
+}
+.hero-demo-msg.show { opacity: 1; transform: none; }
+.hdm-head { font-weight: 700; color: var(--navy); font-size: 13px; margin-bottom: 6px; }
+.hero-demo-msg p { font-size: 13.5px; color: var(--navy); line-height: 1.45; }
 
 .wave { position: absolute; left: 0; right: 0; bottom: -1px; line-height: 0; }
 .wave svg { width: 100%; height: 90px; display: block; }
-
-/* ---------- Проблема ---------- */
-.reason-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px; }
-.reason {
-  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 18px 20px; display: flex; align-items: center; gap: 14px; font-size: 16px;
-}
-.reason-icon { font-size: 26px; }
 
 .callout {
   display: flex; gap: 16px; align-items: center;
@@ -188,7 +203,6 @@ h3 { font-size: 19px; }
   padding: 6px 16px; border-radius: 999px; margin-bottom: 14px; text-transform: uppercase;
 }
 .module-columns { display: grid; grid-template-columns: 1fr 1.15fr; gap: 36px; align-items: start; }
-#module3 .module-columns { grid-template-columns: 1fr; }
 
 .feature-list { list-style: none; }
 .feature-list li {
@@ -227,6 +241,7 @@ h3 { font-size: 19px; }
 
 /* --- Плитки возможностей (модуль 1) --- */
 .feature-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.feature-tiles--5 { grid-template-columns: repeat(5, 1fr); }
 .feature-tile {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
   box-shadow: var(--shadow); padding: 22px 20px; font-size: 14.5px;
@@ -465,8 +480,8 @@ input[type="range"] { width: 100%; accent-color: var(--blue); height: 30px; curs
   .hero-inner, .module-columns, .calc-grid, .contacts-inner, .dash-columns { grid-template-columns: 1fr; }
   .demo1-body.has-result { grid-template-columns: 1fr; }
   .demo1-result { border-left: 0; border-top: 2px solid var(--line); padding-left: 0; padding-top: 18px; }
-  .feature-tiles { grid-template-columns: repeat(2, 1fr); }
-  .hero-visual { max-width: 420px; }
+  .feature-tiles, .feature-tiles--5 { grid-template-columns: repeat(2, 1fr); }
+  .hero-visual { max-width: 440px; }
   .zones-grid { grid-template-columns: 1fr; }
   .price-hero { flex-direction: column; text-align: center; padding: 28px; }
   .safety-grid, .safety-grid--2col { grid-template-columns: 1fr; }
@@ -497,5 +512,5 @@ input[type="range"] { width: 100%; accent-color: var(--blue); height: 30px; curs
   .header-phone { display: none; }
   .section { padding: 52px 0; }
   .patients-table th:nth-child(2), .patients-table td:nth-child(2) { display: none; }
-  .feature-tiles { grid-template-columns: 1fr; }
+  .feature-tiles, .feature-tiles--5 { grid-template-columns: 1fr; }
 }

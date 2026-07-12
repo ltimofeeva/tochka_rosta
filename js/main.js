@@ -31,6 +31,65 @@ const io = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 /* ============================================================
+   Автодемо в герое — зацикленный «видеоролик» анализа картотеки
+   ============================================================ */
+const HERO_ROWS = [
+  { name: 'Иван П.', proc: 'удаление зуба · июнь 2025', flag: true },
+  { name: 'Мария С.', proc: 'консультация · март 2025', flag: true },
+  { name: 'Ольга В.', proc: 'профгигиена · май 2026', flag: false },
+  { name: 'Алексей К.', proc: 'слепки для коронки · февраль 2026', flag: true },
+];
+const HERO_MSG = '«После удаления зуба важно не затягивать с восстановлением. Подобрать удобное время для консультации?»';
+
+const heroRowsEl = document.getElementById('heroDemoRows');
+const heroMsgEl = document.getElementById('heroDemoMsg');
+const heroTextEl = document.getElementById('heroDemoText');
+
+function heroBuildRows() {
+  heroRowsEl.innerHTML = HERO_ROWS.map(r =>
+    `<div class="hd-row"><span><b>${r.name}</b><small>${r.proc}</small></span><span class="badge badge-wait">—</span></div>`
+  ).join('');
+}
+
+function heroLoop() {
+  heroBuildRows();
+  heroMsgEl.classList.remove('show');
+  heroTextEl.textContent = '';
+  const rows = [...heroRowsEl.children];
+  let i = 0;
+  const scanNext = () => {
+    rows.forEach(r => r.classList.remove('scanning'));
+    if (i > 0) {
+      const prev = rows[i - 1], data = HERO_ROWS[i - 1];
+      prev.classList.toggle('flag', data.flag);
+      prev.querySelector('.badge').outerHTML = data.flag
+        ? '<span class="badge badge-flag">⚠ вернуть</span>'
+        : '<span class="badge badge-ok">✓ ок</span>';
+    }
+    if (i >= rows.length) { heroShowMsg(); return; }
+    rows[i].classList.add('scanning');
+    rows[i].querySelector('.badge').outerHTML = '<span class="badge badge-scan">анализ…</span>';
+    i++;
+    setTimeout(scanNext, 650);
+  };
+  setTimeout(scanNext, 700);
+}
+
+function heroShowMsg() {
+  heroMsgEl.classList.add('show');
+  let j = 0;
+  const t = setInterval(() => {
+    heroTextEl.textContent = HERO_MSG.slice(0, ++j);
+    if (j >= HERO_MSG.length) {
+      clearInterval(t);
+      setTimeout(heroLoop, 3800); // пауза и повтор «ролика»
+    }
+  }, 28);
+}
+
+heroLoop();
+
+/* ============================================================
    ДЕМО 1 — Возвращаем пациентов из картотеки
    ============================================================ */
 const PATIENTS = [
