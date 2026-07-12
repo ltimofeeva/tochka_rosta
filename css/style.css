@@ -150,11 +150,18 @@ h3 { font-size: 19px; }
 }
 .hero-demo .demo1-status { display: block; margin-bottom: 8px; font-size: 12.5px; }
 /* компактная версия той же таблицы и разбора, что в модуле 1 */
-.hero-demo .patients-table { font-size: 12px; }
+.hero-demo .patients-table { font-size: 12px; table-layout: fixed; }
 .hero-demo .patients-table th { padding: 5px 6px; font-size: 10px; }
-.hero-demo .patients-table td { padding: 5px 6px; }
-.hero-demo .badge { font-size: 10.5px; padding: 2px 8px; }
-.hero-result { margin-top: 12px; border-top: 2px solid var(--line); padding-top: 10px; }
+.hero-demo .patients-table td { padding: 5px 6px; vertical-align: middle; }
+/* фиксированные ширины колонок: смена статуса не двигает таблицу */
+.hero-demo .patients-table th:nth-child(1) { width: 16%; }
+.hero-demo .patients-table th:nth-child(2) { width: 19%; }
+.hero-demo .patients-table th:nth-child(3) { width: 26%; }
+.hero-demo .patients-table th:nth-child(4) { width: 39%; }
+.hero-demo .badge { font-size: 10px; padding: 2px 6px; }
+/* место под разбор зарезервировано заранее (min-height ставит скрипт) */
+.hero-result { margin-top: 12px; border-top: 2px solid var(--line); padding-top: 10px; visibility: hidden; }
+.hero-result.show { visibility: visible; }
 .hero-demo .patient-brief { font-size: 12px; gap: 3px; margin-bottom: 10px; }
 .hero-demo .ai-message { padding: 10px 12px; }
 .hero-demo .ai-message-head { font-size: 12px; margin-bottom: 5px; }

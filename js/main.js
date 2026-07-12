@@ -195,13 +195,31 @@ function heroRender(state) {
   });
 }
 
-function heroShowPatient(idx) {
-  const p = PATIENTS[idx];
-  heroTbody.querySelectorAll('tr').forEach((tr, i) => tr.classList.toggle('active', i === idx));
+function heroFillBrief(p) {
   heroBrief.innerHTML =
     `<div><b>Пациент:</b> ${p.name} — ${p.proc.toLowerCase()}</div>` +
     p.brief.map(([k, v]) => `<div><b>${k}:</b> ${v}</div>`).join('');
-  heroResult.hidden = false;
+}
+
+/* резервируем место под самый высокий разбор — карточка не меняет размер */
+function heroReserveHeight() {
+  let max = 0;
+  heroFlagged.forEach(idx => {
+    const p = PATIENTS[idx];
+    heroFillBrief(p);
+    heroMsgText.textContent = p.message;
+    max = Math.max(max, heroResult.offsetHeight);
+  });
+  heroResult.style.minHeight = max + 'px';
+  heroBrief.innerHTML = '';
+  heroMsgText.textContent = '';
+}
+
+function heroShowPatient(idx) {
+  const p = PATIENTS[idx];
+  heroTbody.querySelectorAll('tr').forEach((tr, i) => tr.classList.toggle('active', i === idx));
+  heroFillBrief(p);
+  heroResult.classList.add('show');
   clearInterval(heroTypeTimer);
   heroMsgText.textContent = '';
   heroMsgText.classList.remove('done');
@@ -217,7 +235,7 @@ function heroShowPatient(idx) {
 }
 
 function heroLoop() {
-  heroResult.hidden = true;
+  heroResult.classList.remove('show');
   heroRender('idle');
   heroStatus.textContent = 'ИИ просматривает картотеку…';
   let i = 0;
@@ -236,6 +254,7 @@ function heroLoop() {
   setTimeout(step, 900);
 }
 
+heroReserveHeight();
 heroLoop();
 
 /* ============================================================
