@@ -165,10 +165,11 @@ renderPatients('idle');
 const heroTbody = document.querySelector('#heroTable tbody');
 const heroStatus = document.getElementById('heroStatus');
 const heroResult = document.getElementById('heroResult');
+const heroAnalyzing = document.getElementById('heroAnalyzing');
+const heroResultBody = document.getElementById('heroResultBody');
 const heroBrief = document.getElementById('heroBrief');
 const heroMsgText = document.getElementById('heroMsgText');
 const heroFlagged = PATIENTS.map((p, i) => p.flagged ? i : -1).filter(i => i >= 0);
-let heroCycle = 0;
 let heroTypeTimer = null;
 
 /* та же отрисовка, что и в модуле 1: те же статусы и подсветка строк */
@@ -203,6 +204,7 @@ function heroFillBrief(p) {
 
 /* резервируем место под самый высокий разбор — карточка не меняет размер */
 function heroReserveHeight() {
+  heroResultBody.hidden = false;
   let max = 0;
   heroFlagged.forEach(idx => {
     const p = PATIENTS[idx];
@@ -213,13 +215,17 @@ function heroReserveHeight() {
   heroResult.style.minHeight = max + 'px';
   heroBrief.innerHTML = '';
   heroMsgText.textContent = '';
+  heroResultBody.hidden = true;
 }
 
-function heroShowPatient(idx) {
+/* последовательный показ найденных пациентов: k — номер в списке найденных */
+function heroShowSeq(k) {
+  heroAnalyzing.style.display = 'none';
+  heroResultBody.hidden = false;
+  const idx = heroFlagged[k];
   const p = PATIENTS[idx];
   heroTbody.querySelectorAll('tr').forEach((tr, i) => tr.classList.toggle('active', i === idx));
   heroFillBrief(p);
-  heroResult.classList.add('show');
   clearInterval(heroTypeTimer);
   heroMsgText.textContent = '';
   heroMsgText.classList.remove('done');
@@ -229,13 +235,18 @@ function heroShowPatient(idx) {
     if (j >= p.message.length) {
       clearInterval(heroTypeTimer);
       heroMsgText.classList.add('done');
-      setTimeout(heroLoop, 4200); // пауза и повтор
+      // подержали разбор на экране — и дальше: следующий пациент или новый круг
+      setTimeout(() => {
+        if (k + 1 < heroFlagged.length) heroShowSeq(k + 1);
+        else setTimeout(heroLoop, 1200);
+      }, 3200);
     }
   }, 22);
 }
 
 function heroLoop() {
-  heroResult.classList.remove('show');
+  heroResultBody.hidden = true;
+  heroAnalyzing.style.display = 'flex';
   heroRender('idle');
   heroStatus.textContent = 'ИИ просматривает картотеку…';
   let i = 0;
@@ -244,8 +255,7 @@ function heroLoop() {
     if (i >= PATIENTS.length) {
       heroRender('done');
       heroStatus.textContent = `Готово: найдено ${heroFlagged.length} пациента с незаконченным лечением`;
-      // каждый цикл — разбор следующего найденного пациента
-      heroShowPatient(heroFlagged[heroCycle++ % heroFlagged.length]);
+      setTimeout(() => heroShowSeq(0), 600);
       return;
     }
     i++;
