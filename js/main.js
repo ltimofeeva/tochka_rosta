@@ -32,46 +32,43 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 /* ============================================================
    ДЕМО 1 — Возвращаем пациентов из картотеки
+   (данные — со слайда 3 презентации)
    ============================================================ */
 const PATIENTS = [
   {
-    name: 'Иван П.', visit: 'июнь 2025', proc: 'Удаление зуба', flagged: true,
+    name: 'Иван П.', visit: 'июнь 2025', proc: 'Удаление зуба', status: 'Не завершено',
     brief: [
       ['Был', 'удаление зуба, июнь 2025'],
       ['Не закончено', 'новый зуб на место удалённого так и не поставлен'],
       ['Чем грозит откладывание', 'соседние зубы смещаются, лечение дорожает'],
       ['Повод связаться', 'консультация по восстановлению'],
-      ['Подход к пациенту', 'по истории общения важно «не больно» — делаем акцент на комфорт'],
     ],
-    message: '«После удаления зуба важно не затягивать с восстановлением, чтобы не пошла нагрузка на соседние зубы. Подобрать удобное время для консультации?»',
+    message: '«Иван, после удаления зуба важно не затягивать с восстановлением, чтобы не пошла нагрузка на соседние зубы. Подобрать удобное время для консультации?»',
   },
   {
-    name: 'Мария С.', visit: 'март 2025', proc: 'Консультация по имплантации', flagged: true,
+    name: 'Мария С.', visit: 'март 2025', proc: 'Консультация', status: 'Не завершено',
     brief: [
-      ['Была', 'консультация по имплантации, март 2025'],
+      ['Была', 'консультация, март 2025'],
       ['Не закончено', 'лечение так и не началось'],
-      ['Чем грозит откладывание', 'костная ткань убывает — имплантация усложняется'],
+      ['Чем грозит откладывание', 'проблема развивается — лечение дорожает'],
       ['Повод связаться', 'повторная консультация и план лечения'],
-      ['Подход к пациенту', 'в переписке спрашивала о стоимости — предлагаем рассрочку'],
+      ['Подход к пациенту', 'важна цена — рассказываем про рассрочку'],
     ],
-    message: '«Мария, после консультации прошло время — костная ткань в месте отсутствующего зуба постепенно убывает, и лучше не откладывать. Кстати, у нас появилась рассрочка без переплаты. Рассказать подробнее?»',
+    message: '«Мария, после консультации прошло время — лучше не откладывать начало лечения. Кстати, у нас появилась рассрочка без переплаты. Подобрать удобное время?»',
   },
-  {
-    name: 'Ольга В.', visit: 'май 2026', proc: 'Профгигиена', flagged: false },
-  {
-    name: 'Алексей К.', visit: 'февраль 2026', proc: 'Слепки для коронки', flagged: true,
-    brief: [
-      ['Был', 'подготовка зуба и слепки для коронки, февраль 2026'],
-      ['Не закончено', 'постоянная коронка не установлена — стоит временная'],
-      ['Чем грозит откладывание', 'временная коронка не рассчитана на долгий срок — зуб под ней уязвим'],
-      ['Повод связаться', 'установка готовой коронки'],
-      ['Подход к пациенту', 'ценит своё время — подчёркиваем, что визит займёт 40 минут'],
-    ],
-    message: '«Алексей, ваша постоянная коронка готова. Временная не рассчитана на долгий срок — зуб под ней остаётся уязвимым. Установка займёт около 40 минут. Подобрать время на этой неделе?»',
-  },
-  { name: 'Дмитрий Н.', visit: 'апрель 2026', proc: 'Лечение кариеса', flagged: false },
-  { name: 'Елена Т.', visit: 'июнь 2026', proc: 'Отбеливание', flagged: false },
+  { name: 'Олег К.', visit: 'май 2025', proc: 'Имплантация', status: 'Лечение идёт' },
+  { name: 'Анна Т.', visit: 'апрель 2025', proc: 'Лечение кариеса', status: 'Завершено' },
 ];
+
+const STATUS_BADGE = {
+  'Не завершено': 'badge-flag',
+  'Лечение идёт': 'badge-progress',
+  'Завершено': 'badge-ok',
+};
+
+function statusBadge(p) {
+  return `<span class="badge ${STATUS_BADGE[p.status]}">${p.status === 'Не завершено' ? '⚠ ' : p.status === 'Завершено' ? '✓ ' : ''}${p.status}</span>`;
+}
 
 const tbody = document.querySelector('#patientsTable tbody');
 const demo1Start = document.getElementById('demo1Start');
@@ -82,25 +79,24 @@ const aiMessageText = document.getElementById('aiMessageText');
 let demo1Running = false;
 let typeTimer = null;
 
+function isFlagged(p) { return p.status === 'Не завершено'; }
+
 function renderPatients(state) {
-  // state: 'idle' | index досмотренной строки | 'done'
+  // state: 'idle' | номер сканируемой строки | 'done'
   tbody.innerHTML = '';
   PATIENTS.forEach((p, i) => {
     const tr = document.createElement('tr');
     let badge = '<span class="badge badge-wait">ожидает</span>';
     if (state === 'idle') badge = '<span class="badge badge-wait">—</span>';
     else if (typeof state === 'number') {
-      if (i < state) badge = p.flagged
-        ? '<span class="badge badge-flag">⚠ незаконченное лечение</span>'
-        : '<span class="badge badge-ok">✓ лечение завершено</span>';
+      if (i < state) badge = statusBadge(p);
       else if (i === state) { badge = '<span class="badge badge-scan">анализирую…</span>'; tr.classList.add('scanning'); }
     } else if (state === 'done') {
-      badge = p.flagged
-        ? '<span class="badge badge-flag">⚠ незаконченное лечение</span>'
-        : '<span class="badge badge-ok">✓ лечение завершено</span>';
+      badge = statusBadge(p);
     }
-    if ((state === 'done' || (typeof state === 'number' && i < state)) && p.flagged) tr.classList.add('flagged');
-    if ((state === 'done' || (typeof state === 'number' && i < state)) && !p.flagged) tr.classList.add('ok-row');
+    const shown = state === 'done' || (typeof state === 'number' && i < state);
+    if (shown && isFlagged(p)) tr.classList.add('flagged');
+    if (shown && !isFlagged(p)) tr.classList.add('ok-row');
     tr.innerHTML = `<td>${p.name}</td><td>${p.visit}</td><td>${p.proc}</td><td>${badge}</td>`;
     if (tr.classList.contains('flagged')) tr.addEventListener('click', () => selectPatient(i));
     tr.dataset.index = i;
@@ -119,13 +115,17 @@ function typeText(el, text, speed = 22) {
   }, speed);
 }
 
-function selectPatient(i) {
-  const p = PATIENTS[i];
-  if (!p.flagged) return;
-  tbody.querySelectorAll('tr').forEach(tr => tr.classList.toggle('active', +tr.dataset.index === i));
-  patientBrief.innerHTML =
+function fillBrief(el, p) {
+  el.innerHTML =
     `<div><b>Пациент:</b> ${p.name} — ${p.proc.toLowerCase()}</div>` +
     p.brief.map(([k, v]) => `<div><b>${k}:</b> ${v}</div>`).join('');
+}
+
+function selectPatient(i) {
+  const p = PATIENTS[i];
+  if (!isFlagged(p)) return;
+  tbody.querySelectorAll('tr').forEach(tr => tr.classList.toggle('active', +tr.dataset.index === i));
+  fillBrief(patientBrief, p);
   demo1Result.hidden = false;
   document.querySelector('.demo1-body').classList.add('has-result');
   typeText(aiMessageText, p.message);
@@ -143,7 +143,7 @@ demo1Start.addEventListener('click', () => {
     renderPatients(i);
     if (i >= PATIENTS.length) {
       renderPatients('done');
-      const found = PATIENTS.filter(p => p.flagged).length;
+      const found = PATIENTS.filter(isFlagged).length;
       demo1Status.textContent = `Готово: найдено ${found} пациента с незаконченным лечением — нажмите на строку`;
       demo1Start.disabled = false;
       demo1Start.textContent = '↻ Запустить анализ ещё раз';
@@ -169,10 +169,10 @@ const heroAnalyzing = document.getElementById('heroAnalyzing');
 const heroResultBody = document.getElementById('heroResultBody');
 const heroBrief = document.getElementById('heroBrief');
 const heroMsgText = document.getElementById('heroMsgText');
-const heroFlagged = PATIENTS.map((p, i) => p.flagged ? i : -1).filter(i => i >= 0);
+const heroFlagged = PATIENTS.map((p, i) => isFlagged(p) ? i : -1).filter(i => i >= 0);
 let heroTypeTimer = null;
 
-/* та же отрисовка, что и в модуле 1: те же статусы и подсветка строк */
+/* та же отрисовка, что и в модуле 1 */
 function heroRender(state) {
   heroTbody.innerHTML = '';
   PATIENTS.forEach((p, i) => {
@@ -180,26 +180,17 @@ function heroRender(state) {
     let badge = '<span class="badge badge-wait">ожидает</span>';
     if (state === 'idle') badge = '<span class="badge badge-wait">—</span>';
     else if (typeof state === 'number') {
-      if (i < state) badge = p.flagged
-        ? '<span class="badge badge-flag">⚠ незаконченное лечение</span>'
-        : '<span class="badge badge-ok">✓ лечение завершено</span>';
+      if (i < state) badge = statusBadge(p);
       else if (i === state) { badge = '<span class="badge badge-scan">анализирую…</span>'; tr.classList.add('scanning'); }
     } else if (state === 'done') {
-      badge = p.flagged
-        ? '<span class="badge badge-flag">⚠ незаконченное лечение</span>'
-        : '<span class="badge badge-ok">✓ лечение завершено</span>';
+      badge = statusBadge(p);
     }
-    if ((state === 'done' || (typeof state === 'number' && i < state)) && p.flagged) tr.classList.add('flagged');
-    if ((state === 'done' || (typeof state === 'number' && i < state)) && !p.flagged) tr.classList.add('ok-row');
+    const shown = state === 'done' || (typeof state === 'number' && i < state);
+    if (shown && isFlagged(p)) tr.classList.add('flagged');
+    if (shown && !isFlagged(p)) tr.classList.add('ok-row');
     tr.innerHTML = `<td>${p.name}</td><td>${p.visit}</td><td>${p.proc}</td><td>${badge}</td>`;
     heroTbody.appendChild(tr);
   });
-}
-
-function heroFillBrief(p) {
-  heroBrief.innerHTML =
-    `<div><b>Пациент:</b> ${p.name} — ${p.proc.toLowerCase()}</div>` +
-    p.brief.map(([k, v]) => `<div><b>${k}:</b> ${v}</div>`).join('');
 }
 
 /* резервируем место под самый высокий разбор — карточка не меняет размер */
@@ -208,7 +199,7 @@ function heroReserveHeight() {
   let max = 0;
   heroFlagged.forEach(idx => {
     const p = PATIENTS[idx];
-    heroFillBrief(p);
+    fillBrief(heroBrief, p);
     heroMsgText.textContent = p.message;
     max = Math.max(max, heroResult.offsetHeight);
   });
@@ -218,14 +209,14 @@ function heroReserveHeight() {
   heroResultBody.hidden = true;
 }
 
-/* последовательный показ найденных пациентов: k — номер в списке найденных */
+/* последовательный показ найденных пациентов */
 function heroShowSeq(k) {
   heroAnalyzing.style.display = 'none';
   heroResultBody.hidden = false;
   const idx = heroFlagged[k];
   const p = PATIENTS[idx];
   heroTbody.querySelectorAll('tr').forEach((tr, i) => tr.classList.toggle('active', i === idx));
-  heroFillBrief(p);
+  fillBrief(heroBrief, p);
   clearInterval(heroTypeTimer);
   heroMsgText.textContent = '';
   heroMsgText.classList.remove('done');
@@ -235,7 +226,6 @@ function heroShowSeq(k) {
     if (j >= p.message.length) {
       clearInterval(heroTypeTimer);
       heroMsgText.classList.add('done');
-      // подержали разбор на экране — и дальше: следующий пациент или новый круг
       setTimeout(() => {
         if (k + 1 < heroFlagged.length) heroShowSeq(k + 1);
         else setTimeout(heroLoop, 1200);
@@ -269,40 +259,42 @@ heroLoop();
 
 /* ============================================================
    ДЕМО 2 — Умный помощник в мессенджере
+   (сценарий «острая боль» — со слайда 4 презентации)
    ============================================================ */
 const SCENARIOS = {
-  booking: {
-    result: '<b>✅ Запись создана и добавлена в расписание клиники</b>Чистка зубов · чт, 16 июля, 18:30 · врач-гигиенист Соколова А. И. За день до визита помощник напомнит и попросит подтвердить запись.',
+  pain: {
+    result: '<b>✓ Запись создана в расписании клиники</b>Пациент с острой болью получил ближайшее время — завтра, 9:30. Помощник напомнит за 2 часа до визита.',
     steps: [
-      ['user', 'Здравствуйте! Хочу записаться на чистку зубов, но работаю до 18:00'],
-      ['bot', 'Здравствуйте! Конечно 🙂 Профессиональная гигиена занимает около часа. Есть вечернее время: в четверг 16 июля в 18:30 или в субботу утром в 10:00. Как вам удобнее?'],
-      ['user', 'Четверг подойдёт'],
-      ['bot', 'Отлично! Записала вас на четверг, 16 июля, 18:30, к врачу-гигиенисту Соколовой Анне Ивановне. Приём в клинике на ул. Ленина, 12. Напомнить вам о визите накануне?'],
-      ['user', 'Да, напомните пожалуйста'],
-      ['bot', 'Готово! Запись уже в расписании клиники. В среду вечером пришлю напоминание. Хорошего дня! 😊'],
-      ['system', '🗓 Запись автоматически создана в расписании — без участия администратора'],
+      ['bot', 'Здравствуйте! Клиника «Улыбка» на связи. Чем можем помочь?'],
+      ['user', 'Здравствуйте! Очень болит зуб, можно записаться сегодня-завтра?'],
+      ['bot', 'Понимаю. При острой боли найдём ближайшее время — завтра, 9:30. Записать?'],
+      ['user', 'Да, записывайте'],
+      ['bot', 'Готово! Напомню за 2 часа до визита.'],
+      ['system', '✓ Запись создана в расписании клиники'],
     ],
   },
-  pain: {
-    result: '<b>✅ Пациент с острой болью записан в ближайшее свободное окно</b>Сегодня, 14:40 · дежурный врач Орлов Д. С. Администратор получил уведомление о срочном пациенте.',
+  booking: {
+    result: '<b>✓ Запись создана в расписании клиники</b>Помощник сам подобрал удобное время и записал пациента — без участия администратора.',
     steps: [
-      ['user', 'Здравствуйте, у меня очень болит зуб, дёргает всю ночь 😖'],
-      ['bot', 'Здравствуйте! Сочувствую, острая боль — это тяжело. Таких пациентов мы принимаем в ближайшее свободное время. Сегодня есть окно в 14:40 у дежурного врача Орлова Дмитрия Сергеевича. Успеете подъехать?'],
-      ['user', 'Да, успею!'],
-      ['bot', 'Записала вас на сегодня, 14:40. Возьмите с собой паспорт. Если боль усилится — примите обезболивающее, которое вам обычно подходит, но не грейте больное место. Ждём вас!'],
-      ['system', '🚨 Помощник поставил пациента с острой болью в ближайшее окно и предупредил администратора'],
+      ['bot', 'Здравствуйте! Клиника «Улыбка» на связи. Чем можем помочь?'],
+      ['user', 'Хочу записаться на чистку зубов, но работаю до 18:00'],
+      ['bot', 'Конечно! Есть вечернее время: четверг 18:30 или суббота утром 10:00. Как удобнее?'],
+      ['user', 'Четверг подойдёт'],
+      ['bot', 'Записала вас на четверг, 18:30. Напомню о визите накануне. Хорошего дня!'],
+      ['system', '✓ Запись создана в расписании клиники'],
     ],
   },
   price: {
-    result: '<b>✅ Вопрос о цене превращён в запись на консультацию</b>Помощник не «назвал цену и замолчал», а предложил понятный следующий шаг — это и поднимает конверсию в запись.',
+    result: '<b>✓ Вопрос о цене превращён в запись</b>Помощник не «назвал цену и замолчал», а предложил понятный следующий шаг — это и поднимает конверсию в запись.',
     steps: [
-      ['user', 'Добрый день! Сколько стоит имплантация зуба?'],
-      ['bot', 'Добрый день! Имплантация «под ключ» в нашей клинике — от 45 000 ₽. Точная стоимость зависит от диагностики: состояния кости и соседних зубов. Давайте начнём с консультации и снимка — это займёт 30 минут, и вы получите точный план и цену. Подобрать время?'],
-      ['user', 'А консультация платная?'],
-      ['bot', 'Консультация по имплантации бесплатная, снимок — 800 ₽, при начале лечения он входит в стоимость. Есть время завтра в 11:00 или в пятницу в 17:30. Что удобнее?'],
-      ['user', 'Давайте в пятницу'],
-      ['bot', 'Записала вас на пятницу, 17:30, к хирургу-имплантологу Белову Игорю Петровичу. Пришлю напоминание накануне. До встречи! 😊'],
-      ['system', '💬 Сложные вопросы (боль, жалобы, нестандартные случаи) помощник сразу передаёт живому администратору'],
+      ['bot', 'Здравствуйте! Клиника «Улыбка» на связи. Чем можем помочь?'],
+      ['user', 'Сколько стоит имплантация зуба?'],
+      ['bot', 'Имплантация «под ключ» — от 45 000 ₽. Точная стоимость зависит от диагностики — это займёт всего 40 минут, подберём время?'],
+      ['user', 'Давайте'],
+      ['bot', 'Есть время завтра в 11:00 или в пятницу в 17:30. Что удобнее?'],
+      ['user', 'В пятницу'],
+      ['bot', 'Записала вас на пятницу, 17:30. Напомню накануне. До встречи!'],
+      ['system', '✓ Запись создана в расписании клиники'],
     ],
   },
 };
@@ -334,7 +326,6 @@ function playScenario(key) {
   let delay = 400;
   sc.steps.forEach(([who, text]) => {
     if (who === 'bot') {
-      // сначала «печатает…», потом сообщение
       const tDelay = delay;
       chatTimers.push(setTimeout(() => {
         const typing = addMsg('bot', '<span class="typing"><i></i><i></i><i></i></span>');
@@ -361,58 +352,22 @@ scenarioPicker.addEventListener('click', e => {
 });
 
 /* ============================================================
-   Калькулятор неотвеченных звонков
-   ============================================================ */
-const fmt = n => new Intl.NumberFormat('ru-RU').format(Math.round(n));
-const calcEls = {
-  calls: document.getElementById('calcCalls'),
-  missed: document.getElementById('calcMissed'),
-  conv: document.getElementById('calcConv'),
-  check: document.getElementById('calcCheck'),
-};
-const calcOuts = {
-  calls: document.getElementById('calcCallsOut'),
-  missed: document.getElementById('calcMissedOut'),
-  conv: document.getElementById('calcConvOut'),
-  check: document.getElementById('calcCheckOut'),
-};
-
-function recalc() {
-  const calls = +calcEls.calls.value;
-  const missedPct = +calcEls.missed.value;
-  const convPct = +calcEls.conv.value;
-  const check = +calcEls.check.value;
-  const lostPatients = calls * missedPct / 100;
-  const lostVisits = lostPatients * convPct / 100;
-  const lostMoney = lostVisits * check;
-  calcOuts.calls.textContent = fmt(calls);
-  calcOuts.missed.textContent = missedPct + '%';
-  calcOuts.conv.textContent = convPct + '%';
-  calcOuts.check.textContent = fmt(check) + ' ₽';
-  document.getElementById('calcTotal').textContent = '≈ ' + fmt(lostMoney) + ' ₽';
-  document.getElementById('calcDetail').textContent =
-    fmt(lostPatients) + ' потерянных пациентов → ' + fmt(lostVisits) + ' несостоявшихся визитов';
-}
-Object.values(calcEls).forEach(el => el.addEventListener('input', recalc));
-recalc();
-
-/* ============================================================
-   ДЕМО 3 — Анализ звонков
+   ДЕМО 3 — Анализ звонков (звонки — со слайда 5 презентации)
    ============================================================ */
 const CALLS = [
   {
-    time: 'Пн 10:12', topic: 'Имплантация', status: 'не записан', ok: false,
+    name: 'Иван П.', time: '09:32', dur: '1:58', topic: 'Имплантация', status: 'не записан', ok: false,
     lostAt: 2,
     transcript: [
       ['Пациент', 'Здравствуйте, подскажите, сколько у вас стоит имплантация?'],
       ['Администратор', 'Здравствуйте. Имплантация от 45 тысяч рублей.'],
-      ['Администратор', '…', 'Администратор назвал цену — и замолчал, не предложил следующий шаг'],
+      ['Администратор', '…', 'администратор назвал цену — и замолчал'],
       ['Пациент', 'Понятно… спасибо, я подумаю.'],
     ],
-    fix: '«Точная стоимость зависит от диагностики — давайте начнём с консультации и снимка, это займёт 30 минут». Пациент получает понятный следующий шаг вместо «голой» цены.',
+    fix: '«Точная стоимость зависит от диагностики — это займёт всего 40 минут, подберём время?» Пациент получает понятный следующий шаг вместо «голой» цены.',
   },
   {
-    time: 'Пн 12:47', topic: 'Чистка зубов', status: 'записан', ok: true,
+    name: 'Мария С.', time: '11:07', dur: '3:12', topic: 'Чистка зубов', status: 'записана', ok: true,
     lostAt: -1,
     transcript: [
       ['Пациент', 'Добрый день, хочу записаться на чистку.'],
@@ -421,29 +376,29 @@ const CALLS = [
       ['Администратор', 'Есть четверг 18:30 и пятница 19:00. Что выбираете?'],
       ['Пациент', 'Четверг. Записывайте!'],
     ],
-    fix: 'Хороший пример: администратор сразу предложил конкретное время на выбор. Такие фразы программа добавляет в сценарии для всей команды.',
+    fix: 'Хороший пример: администратор сразу предложил конкретное время на выбор. Такие фразы система добавляет в сценарии для всей команды.',
   },
   {
-    time: 'Вт 09:03', topic: 'Брекеты', status: 'не записан', ok: false,
+    name: 'Пётр Н.', time: '12:40', dur: '2:05', topic: 'Брекеты', status: 'не записан', ok: false,
     lostAt: 3,
     transcript: [
       ['Пациент', 'Здравствуйте! Дочке нужны брекеты, что посоветуете?'],
       ['Администратор', 'Здравствуйте. У нас есть ортодонт, приём по записи.'],
       ['Пациент', 'А когда можно попасть?'],
-      ['Администратор', 'Посмотрите расписание на сайте, там всё есть.', 'Пациента был готов записаться — но его отправили «на сайт» вместо предложения времени'],
+      ['Администратор', 'Посмотрите расписание на сайте, там всё есть.', 'пациент был готов записаться — но его отправили «на сайт»'],
       ['Пациент', 'Эм… хорошо, посмотрю.'],
     ],
-    fix: '«Ортодонт принимает в среду и субботу. На этой неделе есть время в субботу в 11:00 — записать дочку на первичную консультацию?» Никогда не отправляем записываться «куда-то ещё».',
+    fix: '«Ортодонт принимает в среду и субботу. Есть время в субботу в 11:00 — записать на первичную консультацию?» Никогда не отправляем записываться «куда-то ещё».',
   },
   {
-    time: 'Вт 16:30', topic: 'Отбеливание', status: 'перезвонить', ok: false,
+    name: 'Светлана В.', time: '16:30', dur: '1:12', topic: 'Отбеливание', status: 'перезвонить', ok: false,
     lostAt: 1,
     transcript: [
       ['Пациент', 'Скажите, отбеливание — это вредно для эмали?'],
-      ['Администратор', 'Ну, это лучше у врача спросить, я не подскажу.', 'Сомнение пациента осталось без ответа — а это самая частая причина срыва записи'],
+      ['Администратор', 'Ну, это лучше у врача спросить, я не подскажу.', 'сомнение пациента осталось без ответа — частая причина срыва записи'],
       ['Пациент', 'Ладно, тогда я ещё почитаю отзывы.'],
     ],
-    fix: '«Отличный вопрос! Мы используем систему с реминерализацией — врач сначала оценит эмаль на бесплатной консультации и честно скажет, подойдёт ли вам отбеливание. Записать?» Программа собирает такие сомнения и готовые ответы на них.',
+    fix: '«Врач сначала оценит эмаль на бесплатной консультации и честно скажет, подойдёт ли вам отбеливание. Записать?» Система собирает такие сомнения и готовые ответы на них.',
   },
 ];
 
@@ -461,7 +416,7 @@ CALLS.forEach((c, i) => {
   const btn = document.createElement('button');
   btn.className = 'call-item';
   const badgeClass = c.ok ? 'badge-ok' : (c.status === 'перезвонить' ? 'badge-scan' : 'badge-flag');
-  btn.innerHTML = `<span><b>${c.topic}</b><small>${c.time}</small></span><span class="badge ${badgeClass}">${c.status}</span>`;
+  btn.innerHTML = `<span><b>${c.name}</b><small>${c.time} · ${c.dur} · ${c.topic}</small></span><span class="badge ${badgeClass}">${c.status}</span>`;
   btn.addEventListener('click', () => showCall(i));
   callsList.appendChild(btn);
 });
@@ -475,15 +430,15 @@ function showCall(i) {
   }).join('');
   callReview.innerHTML = `
     <div class="review-meta">
-      <span class="badge badge-scan">${c.time}</span>
+      <span class="badge badge-scan">${c.time} · ${c.dur}</span>
       <span class="badge badge-wait">${c.topic}</span>
       <span class="badge ${c.ok ? 'badge-ok' : 'badge-flag'}">${c.status}</span>
     </div>
     <div class="review-transcript">${lines}</div>
-    <div class="review-fix"><b>${c.ok ? '✅ Что взять в сценарии:' : '💡 Как надо:'}</b>${c.fix}</div>`;
+    <div class="review-fix"><b>${c.ok ? '✓ Что взять в сценарии:' : '💡 Как надо:'}</b>${c.fix}</div>`;
 }
 
-/* Диаграмма причин: одна тональность синего — величина, прямые подписи значений */
+/* Диаграмма причин: один тон синего — величина, прямые подписи значений */
 const reasonsChart = document.getElementById('reasonsChart');
 REASONS.forEach(([label, val]) => {
   const row = document.createElement('div');

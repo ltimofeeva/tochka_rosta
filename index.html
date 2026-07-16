@@ -6,7 +6,7 @@
   <title>Точка роста АйТи — реактивируем и возвращаем ваших клиентов</title>
   <meta name="description" content="Система на базе искусственного интеллекта для стоматологий: возвращает пациентов из картотеки, принимает обращения 24/7 и повышает конверсию из обращений в запись.">
   <link rel="icon" type="image/png" href="assets/favicon.png">
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
 
@@ -38,24 +38,29 @@
 <section class="hero" id="top">
   <div class="container hero-inner">
     <div class="hero-text">
-      <a href="#top"><img src="assets/logo-full.png" alt="Точка роста АйТи" class="hero-logo"></a>
-      <h1>Реактивируем<br>и&nbsp;возвращаем<br>ваших клиентов</h1>
-      <p class="hero-sub">Система на базе <strong>искусственного интеллекта</strong> для&nbsp;стоматологий.</p>
+      <a href="#top" class="hero-logo">Точка роста <span>АйТи</span></a>
+      <h1>Реактивируем и&nbsp;возвращаем ваших клиентов</h1>
+      <p class="hero-sub">Система на базе <b>искусственного интеллекта</b> для&nbsp;стоматологий.</p>
+      <div class="hero-modules">
+        <a href="#module1" class="hero-chip"><img src="assets/icons/folder.png" alt=""> Мониторинг базы клиентов</a>
+        <a href="#module2" class="hero-chip"><img src="assets/icons/robot.png" alt=""> Помощник 24/7</a>
+        <a href="#module3" class="hero-chip"><img src="assets/icons/chart.png" alt=""> Анализ звонков</a>
+      </div>
       <p class="hero-accent">Без увеличения рекламного бюджета.</p>
+      <div class="hero-stat">
+        <small>каждый месяц мимо клиники проходит</small>
+        <b>≈ 405 000 ₽</b>
+        <span>90 потерянных пациентов → 27 несостоявшихся визитов</span>
+      </div>
       <div class="hero-actions">
         <a href="#module1" class="btn btn-primary">Посмотреть демо модулей</a>
         <a href="#contacts" class="btn btn-outline">Связаться с нами</a>
-      </div>
-      <div class="hero-modules">
-        <a href="#module1" class="hero-chip">🗂 Мониторинг базы клиентов</a>
-        <a href="#module2" class="hero-chip">🤖 Помощник 24/7</a>
-        <a href="#module3" class="hero-chip">📈 Анализ звонков</a>
       </div>
     </div>
     <div class="hero-visual" aria-hidden="true">
       <div class="hero-demo">
         <div class="hero-demo-head"><span class="demo-badge">Демо</span> Как ИИ находит пациентов в картотеке</div>
-        <div class="demo1-status" id="heroStatus">Картотека клиники — 6 карточек (фрагмент)</div>
+        <div class="demo1-status" id="heroStatus">Картотека клиники — фрагмент</div>
         <table class="patients-table" id="heroTable">
           <thead>
             <tr><th>Пациент</th><th>Последний визит</th><th>Процедура</th><th>Статус ИИ</th></tr>
@@ -67,7 +72,7 @@
           <div class="hero-result-body" id="heroResultBody" hidden>
             <div class="patient-brief" id="heroBrief"></div>
             <div class="ai-message">
-              <div class="ai-message-head"><span>🤖</span> Сообщение, которое подготовил ИИ</div>
+              <div class="ai-message-head"><img src="assets/icons/robot.png" alt="" class="inline-ico inline-ico--blue"> Сообщение, которое подготовил ИИ</div>
               <p id="heroMsgText" class="typewriter"></p>
             </div>
           </div>
@@ -75,55 +80,52 @@
       </div>
     </div>
   </div>
-  <div class="wave" aria-hidden="true">
-    <svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,45 C240,90 480,0 720,30 C960,60 1200,80 1440,40 L1440,90 L0,90 Z" fill="#ffffff"/></svg>
-  </div>
 </section>
 
 <!-- ===== Три зоны потерь ===== -->
-<section class="section section-alt">
+<section class="section">
   <div class="container">
     <h2>Три зоны потерь</h2>
-    <p class="section-lead">Вы уже заплатили за пациента. Если он не долечился, не дозвонился или не записался — клиника теряет эти деньги второй раз.</p>
+    <p class="section-lead">Вы уже заплатили за пациента — рекламой, работой врача, сервисом, доверием. Но если пациент не долечился, не дозвонился или не записался повторно — клиника теряет эти деньги второй раз.</p>
     <div class="zones-grid">
       <a class="zone-card" href="#module1">
-        <div class="zone-icon zone-icon--navy">🗂</div>
+        <div class="zone-icon zone-icon--navy"><img src="assets/icons/folder.png" alt=""></div>
         <h3>Картотека</h3>
-        <p>Пациенты не закончили лечение — и о них забыли.</p>
+        <p>Пациенты, которые не закончили лечение.</p>
         <span class="zone-more">Модуль 1 →</span>
       </a>
       <a class="zone-card" href="#module2">
-        <div class="zone-icon zone-icon--blue">📞</div>
+        <div class="zone-icon zone-icon--blue"><img src="assets/icons/phone.png" alt=""></div>
         <h3>Телефон и&nbsp;мессенджеры</h3>
-        <p>Звонки и сообщения без ответа — пациент ушёл к конкурентам.</p>
+        <p>Звонки и сообщения без ответа или отвечали дольше, чем конкуренты, — и пациент ушёл к ним.</p>
         <span class="zone-more">Модуль 2 →</span>
       </a>
       <a class="zone-card" href="#module3">
-        <div class="zone-icon zone-icon--green">🗣</div>
+        <div class="zone-icon zone-icon--green"><img src="assets/icons/chat.png" alt=""></div>
         <h3>Разговор</h3>
         <p>Пациент дозвонился, но его не довели до записи.</p>
         <span class="zone-more">Модуль 3 →</span>
       </a>
     </div>
     <div class="callout">
-      <span class="callout-icon">💎</span>
+      <span class="callout-icon"><img src="assets/icons/diamond.png" alt=""></span>
       <p><b>Мы закрываем все три зоны — от первого обращения до визита.</b> На каждом шаге до записи доходит больше пациентов.</p>
     </div>
   </div>
 </section>
 
 <!-- ===== Модуль 1 ===== -->
-<section class="section module" id="module1">
+<section class="section section-alt module" id="module1">
   <div class="container">
     <div class="module-tag">Модуль 1</div>
     <h2>Возвращаем пациентов <span class="accent-blue">из картотеки</span></h2>
     <p class="section-lead">В картотеке тысячи пациентов, за каждого уже заплачено. Программа возвращает их в кресло:</p>
 
     <div class="feature-tiles">
-      <div class="feature-tile"><span class="ft-icon">🔍</span><p>находит пациентов с незаконченным лечением: удалили зуб — не поставили новый</p></div>
-      <div class="feature-tile"><span class="ft-icon">💚</span><p>подбирает медицинский повод напомнить о себе — забота о здоровье, а не «акция»</p></div>
-      <div class="feature-tile"><span class="ft-icon">🧠</span><p>находит подход к каждому: одному важна цена и рассрочка, другому — «не больно»</p></div>
-      <div class="feature-tile"><span class="ft-icon">🎧</span><p>передаёт тёплого клиента администратору вместе с рекомендациями по общению</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/search.png" alt=""></span><p>находит пациентов с незаконченным лечением</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/heart.png" alt=""></span><p>подбирает медицинский повод напомнить о себе</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/brain.png" alt=""></span><p>находит подход к каждому: рассрочка, «не больно», профессионализм врачей</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/headset.png" alt=""></span><p>передаёт тёплого клиента администратору вместе с рекомендациями по общению</p></div>
     </div>
 
     <!-- Демо 1: анализ картотеки -->
@@ -134,7 +136,7 @@
       </div>
       <div class="demo1-toolbar">
         <button class="btn btn-primary btn-sm" id="demo1Start">▶ Запустить ИИ-анализ картотеки</button>
-        <span class="demo1-status" id="demo1Status">Картотека клиники — 6 карточек (фрагмент)</span>
+        <span class="demo1-status" id="demo1Status">Картотека клиники — фрагмент</span>
       </div>
       <div class="demo1-body">
         <table class="patients-table" id="patientsTable">
@@ -146,7 +148,7 @@
         <div class="demo1-result" id="demo1Result" hidden>
           <div class="patient-brief" id="patientBrief"></div>
           <div class="ai-message">
-            <div class="ai-message-head"><span>🤖</span> Сообщение, которое подготовил ИИ</div>
+            <div class="ai-message-head"><img src="assets/icons/robot.png" alt="" class="inline-ico inline-ico--blue"> Сообщение, которое подготовил ИИ</div>
             <p id="aiMessageText" class="typewriter"></p>
           </div>
           <p class="demo-note">Программа находит таких пациентов и готовит обращение — а решение, связываться ли, всегда остаётся за клиникой.</p>
@@ -155,7 +157,7 @@
     </div>
 
     <div class="callout">
-      <span class="callout-icon">💎</span>
+      <span class="callout-icon"><img src="assets/icons/diamond.png" alt=""></span>
       <p>Даже 3–5 вернувшихся из каждой сотни — это десятки визитов с высоким чеком.</p>
     </div>
   </div>
@@ -171,16 +173,16 @@
     <div class="module-columns">
       <div class="module-info">
         <ul class="feature-list">
-          <li><span class="fl-icon">⚡️</span> мгновенно отвечает на простые вопросы: цены, часы работы, врачи</li>
-          <li><span class="fl-icon">🗓</span> записывает на приём сам — запись сразу в расписании клиники</li>
-          <li><span class="fl-icon">🔔</span> напоминает о визите — меньше «забыл и не пришёл»</li>
-          <li><span class="fl-icon">🦷</span> пациента с острой болью ставит в ближайшее свободное время</li>
-          <li><span class="fl-icon">🎧</span> в час пик отвечает всем параллельно — никто не висит на линии и не уходит к конкурентам</li>
-          <li><span class="fl-icon">📱</span> молодым проще написать, чем позвонить — в переписке помощник так же хорош</li>
+          <li><span class="fl-icon"><img src="assets/icons/bolt.png" alt=""></span> мгновенно отвечает на простые вопросы: цены, часы работы, врачи</li>
+          <li><span class="fl-icon"><img src="assets/icons/calendar.png" alt=""></span> записывает на приём</li>
+          <li><span class="fl-icon"><img src="assets/icons/bell.png" alt=""></span> напоминает о визите</li>
+          <li><span class="fl-icon"><img src="assets/icons/tooth.png" alt=""></span> пациента с острой болью ставит в ближайшее свободное время</li>
+          <li><span class="fl-icon"><img src="assets/icons/headset.png" alt=""></span> в час пик отвечает всем параллельно</li>
+          <li><span class="fl-icon"><img src="assets/icons/chat.png" alt=""></span> адаптирован под новое поколение — проще написать, чем позвонить</li>
         </ul>
         <div class="callout callout-compact">
-          <span class="callout-icon">🛡</span>
-          <p><b>Пациент не почувствует разницы:</b> говорит в стиле вашей клиники · только по утверждённым вами правилам · не даёт медицинских советов · сложные вопросы передаёт живому администратору</p>
+          <span class="callout-icon"><img src="assets/icons/shield.png" alt=""></span>
+          <p><b>Пациент не почувствует разницы:</b> говорит в стиле вашей клиники · только по утверждённым вами правилам · не даёт медицинских советов · сложные вопросы передаёт администратору</p>
         </div>
       </div>
 
@@ -191,13 +193,13 @@
           <h3>Диалог с умным помощником</h3>
         </div>
         <div class="scenario-picker" id="scenarioPicker">
-          <button class="chip" data-scenario="booking">📅 Запись на приём</button>
-          <button class="chip" data-scenario="pain">🦷 Острая боль</button>
-          <button class="chip" data-scenario="price">💬 Вопрос о цене</button>
+          <button class="chip" data-scenario="pain">Острая боль</button>
+          <button class="chip" data-scenario="booking">Запись на приём</button>
+          <button class="chip" data-scenario="price">Вопрос о цене</button>
         </div>
         <div class="chat-window">
           <div class="chat-head">
-            <div class="chat-avatar">🤖</div>
+            <div class="chat-avatar"><img src="assets/icons/robot.png" alt=""></div>
             <div>
               <b>Клиника «Улыбка» — умный помощник</b>
               <small><span class="online-dot"></span> онлайн · отвечает 24/7</small>
@@ -213,170 +215,123 @@
   </div>
 </section>
 
-<!-- ===== Калькулятор потерь ===== -->
-<section class="section section-alt" id="calculator">
-  <div class="container">
-    <h2>Сколько стоят <span class="accent-blue">неотвеченные звонки</span></h2>
-    <p class="section-lead">Подвигайте ползунки — подставьте цифры вашей клиники.</p>
-    <div class="calc-grid">
-      <div class="calc-controls">
-        <label class="calc-row">
-          <span class="calc-label">📞 Обращений в месяц</span>
-          <input type="range" id="calcCalls" min="100" max="2000" step="50" value="600">
-          <output id="calcCallsOut">600</output>
-        </label>
-        <label class="calc-row">
-          <span class="calc-label">✖️ Остались без ответа</span>
-          <input type="range" id="calcMissed" min="5" max="40" step="1" value="15">
-          <output id="calcMissedOut">15%</output>
-        </label>
-        <label class="calc-row">
-          <span class="calc-label">✖️ Записались бы (конверсия)</span>
-          <input type="range" id="calcConv" min="10" max="60" step="1" value="30">
-          <output id="calcConvOut">30%</output>
-        </label>
-        <label class="calc-row">
-          <span class="calc-label">✖️ Средний чек, ₽</span>
-          <input type="range" id="calcCheck" min="3000" max="60000" step="1000" value="15000">
-          <output id="calcCheckOut">15 000 ₽</output>
-        </label>
-      </div>
-      <div class="calc-result">
-        <small>каждый месяц мимо клиники проходит</small>
-        <div class="calc-total" id="calcTotal">≈ 405 000 ₽</div>
-        <p class="calc-detail" id="calcDetail">90 потерянных пациентов → 27 несостоявшихся визитов</p>
-        <p class="calc-note">⚠️ И это скромный расчёт — без дорогих обращений (имплантация, брекеты), где один неотвеченный звонок может стоить сотни тысяч. <b class="accent-blue">Точные цифры посчитаем по вашей телефонии.</b></p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ===== Модуль 3 ===== -->
-<section class="section module" id="module3">
+<section class="section section-alt module" id="module3">
   <div class="container">
     <div class="module-tag">Модуль 3</div>
     <h2>Анализ звонков — <span class="accent-blue">рост записи без новых затрат</span></h2>
-    <p class="section-lead">Руководитель успевает прослушать 2–5 звонков из ста. Программа — все сто, и показывает понятным языком:</p>
+    <p class="section-lead">Руководитель успевает прослушать 2–5 звонков из ста. Система — все 100, и показывает понятным языком:</p>
 
     <div class="feature-tiles feature-tiles--5">
-      <div class="feature-tile"><span class="ft-icon">🗓</span><p>где пациент был готов записаться, но ему не предложили время</p></div>
-      <div class="feature-tile"><span class="ft-icon">❓</span><p>какие сомнения срывают запись — и как на них отвечать</p></div>
-      <div class="feature-tile"><span class="ft-icon">👩‍💼</span><p>кто из администраторов теряет дорогие обращения</p></div>
-      <div class="feature-tile"><span class="ft-icon">💬</span><p>какие фразы реально доводят до записи — включаем их в сценарии</p></div>
-      <div class="feature-tile"><span class="ft-icon">🎓</span><p>чему учить команду — разбор своих разговоров, а не абстрактный тренинг</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/calendar2.png" alt=""></span><p>где пациент был готов записаться, но ему не предложили время</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/question.png" alt=""></span><p>какие сомнения срывают запись и как на них отвечать</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/doctor.png" alt=""></span><p>кто из администраторов теряет дорогие обращения</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/chat.png" alt=""></span><p>какие фразы реально доводят до записи</p></div>
+      <div class="feature-tile"><span class="ft-icon"><img src="assets/icons/grad.png" alt=""></span><p>чему учить команду — разбор разговоров</p></div>
     </div>
 
     <!-- Демо 3: дашборд анализа звонков -->
     <div class="demo-panel demo-panel--wide" id="demo3">
-        <div class="demo-header">
-          <span class="demo-badge">Демо</span>
-          <h3>Отчёт по звонкам за неделю</h3>
+      <div class="demo-header">
+        <span class="demo-badge">Демо</span>
+        <h3>Отчёт по звонкам за неделю</h3>
+      </div>
+      <div class="dash-tiles">
+        <div class="tile"><small>Проанализировано</small><b>100&nbsp;%</b><span class="tile-sub">все 214 разговоров</span></div>
+        <div class="tile"><small>Конверсия в запись</small><b>42&nbsp;%</b><span class="tile-sub">цель — 60 %</span></div>
+        <div class="tile tile-warn"><small>Потерянные обращения</small><b>31</b><span class="tile-sub">можно вернуть звонком</span></div>
+      </div>
+      <div class="dash-columns">
+        <div class="calls-list" id="callsList">
+          <div class="calls-list-head">Звонки · нажмите, чтобы открыть разбор</div>
+          <!-- заполняется скриптом -->
         </div>
-        <div class="dash-tiles">
-          <div class="tile"><small>Звонков проанализировано</small><b>100&nbsp;%</b><span class="tile-sub">все 214 разговоров</span></div>
-          <div class="tile"><small>Конверсия в запись</small><b>42&nbsp;%</b><span class="tile-sub">цель — 60 %</span></div>
-          <div class="tile tile-warn"><small>Потерянные обращения</small><b>31</b><span class="tile-sub">можно вернуть звонком</span></div>
+        <div class="call-review" id="callReview">
+          <div class="call-review-placeholder">← Выберите звонок из списка</div>
         </div>
-        <div class="dash-columns">
-          <div class="calls-list" id="callsList">
-            <div class="calls-list-head">Звонки · нажмите, чтобы открыть разбор</div>
-            <!-- заполняется скриптом -->
-          </div>
-          <div class="call-review" id="callReview">
-            <div class="call-review-placeholder">← Выберите звонок из списка</div>
-          </div>
-        </div>
-        <div class="dash-chart">
-          <div class="chart-title">Почему срывается запись — по всем звонкам недели</div>
-          <div class="hbar-chart" id="reasonsChart"><!-- заполняется скриптом --></div>
+      </div>
+      <div class="dash-chart">
+        <div class="chart-title">Почему срывается запись — по всем звонкам недели</div>
+        <div class="hbar-chart" id="reasonsChart"><!-- заполняется скриптом --></div>
       </div>
     </div>
 
     <div class="callout">
-      <span class="callout-icon">💎</span>
-      <p>Итог — заметно лучше сервис: с пациентами разговаривают внимательнее и по делу.</p>
+      <span class="callout-icon"><img src="assets/icons/diamond.png" alt=""></span>
+      <p>Итог — заметно лучше сервис и увеличение конверсии в запись.</p>
     </div>
   </div>
 </section>
 
-<!-- ===== Как всё работает вместе ===== -->
-<section class="section" id="together">
+<!-- ===== Почему это безопасно ===== -->
+<section class="section" id="safety">
   <div class="container">
-    <h2>Как всё работает вместе</h2>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-icon">🗂</div><b>Картотека</b><p>находим пациентов с незаконченным лечением</p></div>
-      <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">2</div><div class="step-icon">🤖</div><b>Умный помощник</b><p>приглашает, отвечает и записывает — автоматически</p></div>
-      <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">3</div><div class="step-icon">👨‍⚕️</div><b>Живой администратор</b><p>ведёт сложные и дорогие обращения</p></div>
-      <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">4</div><div class="step-icon">📈</div><b>Анализ звонков</b><p>показывает слабые места, где теряется запись</p></div>
-      <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">5</div><div class="step-icon">🔄</div><b>Улучшение сценариев</b><p>каждый следующий разговор лучше предыдущего</p></div>
-    </div>
-    <div class="callout">
-      <span class="callout-icon">💎</span>
-      <p><b>Каждую часть можно запустить отдельно.</b> Но сильнее всего они работают вместе: картотека возвращает пациентов, помощник не упускает ни одного обращения, анализ делает каждый разговор лучше.</p>
-    </div>
-  </div>
-</section>
+    <h2>Почему это безопасно для клиники</h2>
+    <p class="section-lead">ИИ берёт на себя <b class="accent-blue">рутину и контроль качества</b>, пока ваша команда занимается главным — живыми пациентами в клинике.</p>
 
-<!-- ===== Люди для людей + безопасность ===== -->
-<section class="section section-alt" id="safety">
-  <div class="container">
-    <h2>Почему именно наш продукт</h2>
-    <p class="section-lead">ИИ берёт на себя <b class="accent-blue">рутину и контроль качества</b> — команда занимается живыми пациентами.</p>
-    <div class="safety-grid">
-      <div class="safety-item">🚀 тысячи задач в минуту: звонки, сообщения, напоминания — параллельно и без очереди</div>
-      <div class="safety-item">🧠 не устаёт и не забывает — человеческий фактор уходит из рутины</div>
-      <div class="safety-item">❤️ решения о лечении и сложные разговоры всегда остаются за человеком</div>
+    <div class="benefit-grid">
+      <div class="benefit-card">
+        <span class="ft-icon"><img src="assets/icons/bolt.png" alt=""></span>
+        <h3>Тысячи задач в минуту</h3>
+        <p>звонки, сообщения, напоминания, записи — параллельно и без очереди</p>
+      </div>
+      <div class="benefit-card">
+        <span class="ft-icon"><img src="assets/icons/brain.png" alt=""></span>
+        <h3>Не устаёт и не забывает</h3>
+        <p>человеческий фактор уходит из рутины</p>
+      </div>
+      <div class="benefit-card">
+        <span class="ft-icon"><img src="assets/icons/heart.png" alt=""></span>
+        <h3>Решения — за человеком</h3>
+        <p>ни одно решение о лечении и сложный разговор не остаются без него</p>
+      </div>
     </div>
 
-    <h3 class="sub-blue safety-sub">Почему это безопасно для клиники</h3>
     <div class="safety-grid safety-grid--2col">
-      <div class="safety-item">📋 программа не ставит диагнозы и не назначает лечение — только организационные вопросы и запись</div>
-      <div class="safety-item">✅ все фразы и правила общения утверждаете вы</div>
-      <div class="safety-item">🎧 сложные и медицинские вопросы всегда передаются человеку</div>
-      <div class="safety-item">🔒 данные пациентов защищены по требованиям закона о персональных данных</div>
-      <div class="safety-item">👁 любой разговор можно открыть и прочитать — полная прозрачность</div>
-      <div class="safety-item">📊 отчёты по звонкам — инструмент роста команды</div>
+      <div class="safety-item"><img src="assets/icons/doc.png" alt="" class="si-icon"> не ставит диагнозы и не назначает лечение — только организационные вопросы и запись</div>
+      <div class="safety-item"><img src="assets/icons/check.png" alt="" class="si-icon"> все фразы и правила общения утверждаете вы</div>
+      <div class="safety-item"><img src="assets/icons/headset.png" alt="" class="si-icon"> сложные и медицинские вопросы всегда передаются человеку</div>
+      <div class="safety-item"><img src="assets/icons/lock.png" alt="" class="si-icon"> данные пациентов защищены по требованиям закона о персональных данных</div>
+      <div class="safety-item"><img src="assets/icons/eye.png" alt="" class="si-icon"> любой разговор можно открыть и прочитать — полная прозрачность</div>
+      <div class="safety-item"><img src="assets/icons/chart.png" alt="" class="si-icon"> отчёты по звонкам — инструмент роста команды</div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon"><img src="assets/icons/diamond.png" alt=""></span>
+      <p><b>Каждый модуль можно запустить отдельно</b> — начните там, где потери заметнее всего. Вместе они дают максимальный эффект.</p>
     </div>
   </div>
 </section>
 
 <!-- ===== Как подключить ===== -->
-<section class="section" id="connect">
+<section class="section section-alt" id="connect">
   <div class="container">
     <h2>Как подключить</h2>
     <p class="section-lead">Основную работу берём на себя.</p>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-icon">📩</div><b>Заявка</b><p>созваниваемся и показываем систему на живом демо</p></div>
+      <div class="step"><div class="step-num">1</div><div class="step-icon"><img src="assets/icons/envelope.png" alt=""></div><b>Заявка</b><p>созваниваемся и показываем систему на живом демо</p></div>
       <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">2</div><div class="step-icon">🔍</div><b>Анализ</b><p>считаем точные цифры потерь по вашей телефонии и картотеке</p></div>
+      <div class="step"><div class="step-num">2</div><div class="step-icon"><img src="assets/icons/search.png" alt=""></div><b>Анализ</b><p>считаем точные цифры потерь по вашей телефонии и картотеке</p></div>
       <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">3</div><div class="step-icon">⚙️</div><b>Настройка</b><p>вы утверждаете фразы — помощник говорит в стиле вашей клиники</p></div>
+      <div class="step"><div class="step-num">3</div><div class="step-icon"><img src="assets/icons/check.png" alt=""></div><b>Настройка</b><p>вы утверждаете фразы — помощник говорит в стиле вашей клиники</p></div>
       <div class="step-arrow">→</div>
-      <div class="step"><div class="step-num">4</div><div class="step-icon">🚀</div><b>Запуск</b><p>подключаем модули и сопровождаем работу</p></div>
-    </div>
-    <div class="callout">
-      <span class="callout-icon">💎</span>
-      <p><b>Каждый модуль можно запустить отдельно</b> — начните там, где потери заметнее всего.</p>
+      <div class="step"><div class="step-num">4</div><div class="step-icon"><img src="assets/icons/bolt.png" alt=""></div><b>Запуск</b><p>подключаем модули и сопровождаем работу</p></div>
     </div>
   </div>
 </section>
 
 <!-- ===== Стоимость ===== -->
-<section class="section section-alt" id="pricing">
+<section class="section" id="pricing">
   <div class="container">
     <h2>Стоимость услуги</h2>
     <div class="price-hero">
-      <div class="price-ruble">₽</div>
-      <div class="price-value">15 000 <span>рублей.</span></div>
+      <div class="price-ruble"><img src="assets/icons/ruble.png" alt="₽"></div>
+      <div class="price-value">15 000 <span>рублей</span></div>
     </div>
-    <p class="price-note">Подробнее условия уточняйте у менеджера.</p>
+    <p class="price-note">Подробнее условия уточняйте у представителя компании.</p>
     <div class="pricing-cta">
       <p>Модули можно подключать по отдельности или вместе — вместе они дают максимальный эффект.</p>
-      <a href="#contacts" class="btn btn-primary">Связаться с менеджером</a>
+      <a href="mailto:TochkaRosta-it@mail.ru" class="btn btn-primary">Написать нам</a>
     </div>
   </div>
 </section>
@@ -386,23 +341,27 @@
   <div class="container contacts-inner">
     <div class="contacts-text">
       <h2>Рады будем ответить на&nbsp;все ваши вопросы</h2>
-      <a class="contact-line" href="tel:+79828540054"><span class="contact-ico">📞</span> 8-982-854-00-54</a>
-      <a class="contact-line" href="mailto:TochkaRosta-it@mail.ru"><span class="contact-ico">✉️</span> TochkaRosta-it@mail.ru</a>
+      <a class="contact-line" href="tel:+79828540054"><span class="contact-ico"><img src="assets/icons/phone.png" alt=""></span> 8-982-854-00-54</a>
+      <a class="contact-line" href="mailto:TochkaRosta-it@mail.ru"><span class="contact-ico"><img src="assets/icons/envelope.png" alt=""></span> TochkaRosta-it@mail.ru</a>
+      <a class="contact-line" href="https://tochka-rosta-it.ru" target="_blank" rel="noopener"><span class="contact-ico"><img src="assets/icons/globe.png" alt=""></span> tochka-rosta-it.ru</a>
+      <p class="contacts-slogan">Без увеличения рекламного бюджета — рост за счёт пациентов, которые у вас уже есть.</p>
+      <a href="mailto:TochkaRosta-it@mail.ru" class="btn btn-primary">Написать нам</a>
     </div>
     <div class="contacts-photo">
-      <img src="assets/evgeniy.jpg" alt="Евгений — Точка роста АйТи">
+      <img src="assets/evgeniy.png" alt="Евгений — Точка роста АйТи">
       <p class="contacts-name">Евгений</p>
+      <p class="contacts-company">Точка роста АйТи</p>
     </div>
   </div>
 </section>
 
 <footer class="site-footer">
   <div class="container footer-inner">
-    <img src="assets/logo-full.png" alt="Точка роста АйТи" class="footer-logo">
-    <p>© 2026 Точка роста АйТи · Система на базе ИИ для стоматологий</p>
+    <span class="footer-logo">Точка роста <span>АйТи</span></span>
+    <p>© 2026 Точка роста АйТи · tochka-rosta-it.ru</p>
   </div>
 </footer>
 
-<script src="js/main.js?v=9"></script>
+<script src="js/main.js?v=10"></script>
 </body>
 </html>
