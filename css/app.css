@@ -303,28 +303,73 @@ body {
 .task-reason b { color: var(--red); }
 .task-done-row { opacity: .82; }
 
-/* ---------- Карточка пациента ---------- */
-.drawer-backdrop {
-  position: fixed; inset: 0; background: rgba(18,35,90,.45); z-index: 90;
+/* ---------- Карточка пациента (на весь экран) ---------- */
+.pmodal {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg); overflow-y: auto;
+  animation: fadeUp .25s ease;
 }
-.drawer {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 100;
-  width: 500px; max-width: 92vw;
-  background: #fff; box-shadow: -12px 0 40px rgba(18,35,90,.25);
-  padding: 26px 26px 40px; overflow-y: auto;
-  animation: slideIn .3s ease;
+.pmodal-inner { max-width: 1160px; margin: 0 auto; padding: 26px 32px 60px; }
+.pmodal-head {
+  display: flex; gap: 16px; align-items: center;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 20px;
+}
+.pmodal-title { flex: 1; }
+.pmodal-head h2 { font-size: 22px; line-height: 1.2; }
+.pmodal-chip { margin-right: 40px; }
+.pmodal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.pmodal-col .drawer-section {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px 20px;
 }
 @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 .drawer-close {
-  position: fixed; top: 16px; right: 16px; z-index: 120;
-  width: 34px; height: 34px; border-radius: 50%;
+  position: fixed; top: 16px; right: 16px; z-index: 140;
+  width: 36px; height: 36px; border-radius: 50%;
   border: 1px solid var(--line); background: #fff; cursor: pointer;
   font-size: 14px; color: var(--ink-soft);
+  box-shadow: var(--shadow);
 }
 .drawer-close:hover { color: var(--red); border-color: var(--red); }
-.drawer-head { display: flex; gap: 14px; align-items: center; margin-bottom: 20px; }
-.drawer-head h2 { font-size: 20px; line-height: 1.2; }
 .drawer-phone { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+
+/* сообщение */
+.msg-box { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.msg-text {
+  padding: 14px; font-size: 14px; min-height: 130px; line-height: 1.6;
+  outline: none; white-space: pre-wrap;
+}
+.msg-text:focus { background: #fbfdff; }
+.msg-text mark { background: #fdf2c9; border-radius: 3px; padding: 0 2px; }
+.msg-hint {
+  background: var(--bg); border-top: 1px solid var(--line);
+  font-size: 11.5px; color: var(--ink-soft); padding: 7px 14px;
+}
+.drawer-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.drawer-actions .btn-primary { margin-left: 0; font-size: 14px; padding: 11px 18px; }
+.btn-wa { background: var(--green); }
+.btn-wa:hover { background: #128e67; }
+
+/* ---------- Сценарий звонка: боковая панель ---------- */
+.script-backdrop {
+  position: fixed; inset: 0; background: rgba(18,35,90,.45); z-index: 110;
+}
+.script-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 120;
+  width: 520px; max-width: 94vw;
+  background: #fff; box-shadow: -12px 0 40px rgba(18,35,90,.3);
+  padding: 24px 24px 40px; overflow-y: auto;
+  animation: slideIn .3s ease;
+}
+.script-close { position: fixed; z-index: 140; }
+.script-head { margin-bottom: 16px; }
+.script-head h2 { font-size: 20px; }
+.script-sub { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+.script-footnote {
+  margin-top: 16px; font-size: 12.5px; color: var(--ink-soft);
+  background: var(--bg); border-radius: 10px; padding: 10px 14px;
+}
 
 .drawer-section { margin-bottom: 20px; }
 .drawer-section h3 {
@@ -358,17 +403,36 @@ body {
 .insight-box p { margin-top: 4px; }
 .insight-box p b { color: var(--blue-deep); }
 
-/* сценарий звонка */
-.script-box { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-.script-step { padding: 11px 14px; border-top: 1px solid var(--line); font-size: 13.5px; }
-.script-step:first-child { border-top: 0; }
-.script-step-label {
-  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
-  color: var(--ink-soft); margin-bottom: 3px;
+/* сценарий звонка: воронка */
+.funnel-step { display: flex; gap: 14px; position: relative; padding-bottom: 18px; }
+.funnel-step::before {
+  content: ""; position: absolute; left: 15px; top: 34px; bottom: 0;
+  width: 2px; background: var(--line);
 }
-.script-step.key { background: #fdf9e8; }
-.script-step.key .script-step-label { color: var(--orange); }
-.script-obj { margin-top: 6px; padding-left: 12px; border-left: 3px solid var(--line); }
+.funnel-step:last-child { padding-bottom: 0; }
+.funnel-step:last-child::before { display: none; }
+.funnel-num {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: var(--tint); color: var(--blue-deep);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; position: relative; z-index: 1;
+}
+.funnel-step.key .funnel-num { background: var(--orange); color: #fff; }
+.funnel-step.close-step .funnel-num { background: var(--green); color: #fff; }
+.funnel-body { flex: 1; padding-top: 4px; }
+.funnel-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--ink-soft); margin-bottom: 4px;
+}
+.funnel-step.key .funnel-label { color: var(--orange); }
+.funnel-step.close-step .funnel-label { color: var(--green); }
+.funnel-text { font-size: 13.5px; }
+.funnel-text mark { background: #fdf2c9; border-radius: 3px; padding: 0 2px; }
+.funnel-goal { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+.script-obj {
+  margin-top: 8px; padding: 8px 12px; font-size: 13px;
+  background: var(--bg); border-left: 3px solid var(--sky); border-radius: 0 8px 8px 0;
+}
 .script-obj b { color: var(--red); font-weight: 700; }
 .typing-caret::after { content: "▍"; color: var(--blue); animation: blink .8s infinite; }
 @keyframes blink { 50% { opacity: 0; } }

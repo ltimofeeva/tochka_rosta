@@ -196,6 +196,27 @@ const PATIENTS = [
   }
 ];
 
+
+/* ---------- Персональные сообщения (генерирует ИИ) ---------- */
+const MESSAGES = {
+  1: 'Анна, здравствуйте! Это стоматология «Дента+». Доктор Орлова напоминает: после лечения зуба 3.6 важно поставить коронку — без неё зуб может не выдержать нагрузку. {Сейчас коронку можно оформить в рассрочку 0% на 6 месяцев — без первого взноса и переплат.} Подобрать удобное время на этой неделе?',
+  2: 'Дмитрий, добрый день! Стоматология «Дента+». У вас пролечены 2 зуба из 4 по плану — осталось два небольших кариеса, лучше закрыть их, пока они не выросли в пульпит. {До конца месяца для вас действует скидка 15% на завершение плана лечения.} Записать вас на удобный день?',
+  3: 'Мария, здравствуйте! Это «Дента+», пишем от доктора Гусева. Прошло почти полгода после удаления зуба — сейчас самое подходящее время для имплантации, {дальше кость в этом месте начнёт убывать, и лечение станет сложнее. Доктор хотел бы сам посмотреть вас и спокойно обсудить варианты — без спешки и навязывания.} Подберём удобное время?',
+  4: 'Игорь, добрый вечер! Стоматология «Дента+». После лечения каналов у вас стоит временная пломба — её пора заменить на постоянную, иначе зуб может треснуть. {Есть вечерние окна: четверг 19:30 или пятница 20:00 — как вам удобно.} Забронировать одно из них?',
+  5: 'Ольга, здравствуйте! «Дента+». Ваши брекеты ждут коррекции — прошло уже 5 месяцев, без активации лечение затягивается и результат «откатывается». {Можем совместить: вы на коррекцию, а дочке в это же время сделаем плановый осмотр — по семейной программе он бесплатный.} Подобрать время, удобное для вас двоих?',
+  6: 'Сергей, добрый день! Стоматология «Дента+». Весной на гигиене мы нашли два небольших кариеса — сейчас их лечение займёт один визит и минимум затрат, дальше будет дороже. {Для вас действует спецпредложение: −15% на лечение обоих зубов при записи до конца месяца.} Подобрать удобный день?',
+  7: 'Наталья Петровна, здравствуйте! Это «Дента+», от доктора Орловой. Доктор интересуется, как вы привыкли к протезу — обычно через пару месяцев нужна небольшая коррекция, чтобы ничего не натирало. {Осмотр и подгонка для вас бесплатны — это часть вашего лечения.} Когда вам было бы удобно заглянуть?',
+  8: 'Лидия, здравствуйте! Это «Дента+». У вас начат план лечения — пролечен один зуб из трёх. {Доктор готов продолжить в удобном для вас темпе — без спешки, каждый визит около часа.} Подобрать время?',
+  9: 'Пётр, добрый день! Стоматология «Дента+». По вашему плану имплантации есть хорошая новость: {первый этап можно оформить в рассрочку 0% — от 9 800 ₽ в месяц, без первого взноса.} Записать вас на старт лечения?'
+};
+PATIENTS.forEach(p => { p.message = MESSAGES[p.id]; });
+
+/* возражения, общие для всех сценариев */
+const COMMON_OBJECTIONS = [
+  ['«Мне ничего не мешает»', 'Пока не болит — лечение проще и в разы дешевле. Именно поэтому врач просил связаться заранее, а не когда заболит.'],
+  ['«Перезвоните позже»', 'Конечно. Когда удобно? Зафиксирую время — система напомнит позвонить именно в этот момент.']
+];
+
 /* ---------- Утилиты ---------- */
 const $ = (sel) => document.querySelector(sel);
 const byId = (id) => PATIENTS.find(p => p.id === id);
@@ -215,7 +236,7 @@ function statusChip(st) {
 function actionCell(p) {
   return p.status
     ? statusChip(p.status)
-    : `<button class="p-action" data-id="${p.id}"><img src="assets/icons/phone.png" alt="">Сценарий звонка</button>`;
+    : `<button class="p-action" data-id="${p.id}"><img src="assets/icons/doc.png" alt="">Открыть карточку</button>`;
 }
 
 /* ---------- Переключение экранов ---------- */
@@ -249,7 +270,7 @@ function renderTasks() {
     .map(p => taskRow(p, `<span class="prio prio-${p.prio}">${PRIO_LABEL[p.prio]}<br>${nb(p.planSum)}</span>`, true)).join('');
 
   document.querySelectorAll('.task-list .p-action').forEach(btn =>
-    btn.addEventListener('click', () => openDrawer(byId(+btn.dataset.id))));
+    btn.addEventListener('click', () => openCard(byId(+btn.dataset.id))));
 }
 
 function taskRow(p, firstCell, isDone = false) {
@@ -290,7 +311,7 @@ function renderPatients() {
       <div class="p-cell-action">${actionCell(p)}</div>
     `;
     const btn = row.querySelector('.p-action');
-    if (btn) btn.addEventListener('click', () => openDrawer(p));
+    if (btn) btn.addEventListener('click', () => openCard(p));
     list.appendChild(row);
   });
 }
@@ -348,14 +369,17 @@ let typingTimer = null;
 let currentPatient = null;
 let selectedOutcome = null;
 
-function openDrawer(p) {
+const renderMsg = (raw) => raw.replace('{', '<mark>').replace('}', '</mark>');
+
+function openCard(p) {
   currentPatient = p;
   selectedOutcome = null;
   const ins = INSIGHTS[p.insight];
 
   $('#dAvatar').textContent = p.initials;
   $('#dName').textContent = p.name;
-  $('#dPhone').textContent = p.phone + ' · последний визит ' + p.lastVisit;
+  $('#dPhone').textContent = p.phone + ' · последний визит ' + p.lastVisit + ' · план лечения ' + nb(p.planSum);
+  $('#dHeadChip').innerHTML = `<span class="insight-chip ${ins.chip}">${ins.icon} ${ins.label}</span>`;
   $('#dTreat').textContent = p.treatFull;
   $('#dVisits').innerHTML = p.visits.map(v =>
     `<li><span>${v[0]}</span> — ${v[1]} <em>· ${v[2]}</em></li>`).join('');
@@ -364,70 +388,120 @@ function openDrawer(p) {
     <p>${ins.detail}</p>
     <p><b>Рекомендация ИИ:</b> ${ins.reco}</p>`;
 
-  renderScript(p, ins);
-
   document.querySelectorAll('.outcome-btn').forEach(b => b.classList.remove('selected'));
   $('#outcomeComment').value = '';
   $('#sentNote').classList.add('hidden');
+  $('#waNote').classList.add('hidden');
   $('#btnSaveOutcome').disabled = false;
+  $('#btnSend').disabled = false;
 
-  $('#drawerBackdrop').classList.remove('hidden');
-  $('#drawer').classList.remove('hidden');
-  $('#drawer').scrollTop = 0;
+  $('#pmodal').classList.remove('hidden');
+  $('#pmodal').scrollTop = 0;
+
+  typeMessage(renderMsg(p.message));
 }
 
-function renderScript(p, ins) {
-  const objections = ins.objections.map(o =>
-    `<div class="script-obj"><b>${o[0]}</b> — ${o[1]}</div>`).join('');
-  $('#dScript').innerHTML = `
-    <div class="script-step">
-      <div class="script-step-label">Приветствие</div>
-      «${p.name.split(' ')[0]}, здравствуйте! Это Елена, стоматология “Дента+”. Удобно говорить пару минут?»
-    </div>
-    <div class="script-step">
-      <div class="script-step-label">Повод звонка</div>
-      ${p.reason}. Объяснить, почему важно не откладывать (медицинский аргумент из плана лечения).
-    </div>
-    <div class="script-step key">
-      <div class="script-step-label">Ключевой аргумент — под инсайт пациента</div>
-      <span id="scriptKey"></span>
-    </div>
-    <div class="script-step">
-      <div class="script-step-label">Если возражает</div>
-      ${objections}
-    </div>
-    <div class="script-step">
-      <div class="script-step-label">Цель звонка</div>
-      Предложить два конкретных окна на этой неделе и записать. Подтвердить SMS-напоминанием.
-    </div>`;
-  typeText($('#scriptKey'), p.argument);
-}
-
-/* эффект «ИИ печатает» для ключевого аргумента */
-function typeText(el, text) {
+/* эффект «ИИ печатает сообщение» — по словам, не ломая <mark> */
+function typeMessage(html) {
+  const box = $('#dMessage');
   clearInterval(typingTimer);
-  el.textContent = '';
-  el.classList.add('typing-caret');
-  const words = text.split(' ');
-  let i = 0;
+  box.innerHTML = '';
+  box.classList.add('typing-caret');
+  const tokens = html.split(/(<mark>|<\/mark>| )/).filter(t => t !== '');
+  let i = 0, acc = '';
   typingTimer = setInterval(() => {
-    el.textContent += (i ? ' ' : '') + words[i];
+    acc += tokens[i];
+    box.innerHTML = acc;
     i++;
-    if (i >= words.length) {
+    if (i >= tokens.length) {
       clearInterval(typingTimer);
-      el.classList.remove('typing-caret');
+      box.classList.remove('typing-caret');
     }
-  }, 90);
+  }, 38);
 }
 
-function closeDrawer() {
+function closeCard() {
   clearInterval(typingTimer);
-  $('#drawer').classList.add('hidden');
-  $('#drawerBackdrop').classList.add('hidden');
+  closeScript();
+  $('#pmodal').classList.add('hidden');
 }
 
-$('#drawerClose').addEventListener('click', closeDrawer);
-$('#drawerBackdrop').addEventListener('click', closeDrawer);
+/* ---------- Сценарий звонка: боковая панель с воронкой ---------- */
+function openScript() {
+  if (!currentPatient) return;
+  const p = currentPatient;
+  const ins = INSIGHTS[p.insight];
+  $('#scriptPatient').textContent = p.name + ' · инсайт: ' + ins.label.toLowerCase();
+
+  const objections = [...ins.objections, ...COMMON_OBJECTIONS].map(o =>
+    `<div class="script-obj"><b>${o[0]}</b> — ${o[1]}</div>`).join('');
+
+  $('#dScript').innerHTML = `
+    <div class="funnel-step">
+      <div class="funnel-num">1</div>
+      <div class="funnel-body">
+        <div class="funnel-label">Установление контакта</div>
+        <div class="funnel-text">«${p.name.split(' ')[0]}, здравствуйте! Это Елена, стоматология “Дента+”. Удобно говорить пару минут?»</div>
+        <div class="funnel-goal">Цель этапа: получить 2 минуты внимания, доброжелательный тон</div>
+      </div>
+    </div>
+    <div class="funnel-step">
+      <div class="funnel-num">2</div>
+      <div class="funnel-body">
+        <div class="funnel-label">Повод звонка — актуализация проблемы</div>
+        <div class="funnel-text">${p.reason}. Объяснить простыми словами, что будет, если отложить (медицинский аргумент из плана лечения).</div>
+        <div class="funnel-goal">Цель этапа: пациент понял, почему важно не откладывать</div>
+      </div>
+    </div>
+    <div class="funnel-step key">
+      <div class="funnel-num">3</div>
+      <div class="funnel-body">
+        <div class="funnel-label">Предложение — под инсайт пациента</div>
+        <div class="funnel-text"><mark>${p.argument}</mark></div>
+        <div class="funnel-goal">Цель этапа: интерес — аргумент подобран ИИ по истории пациента</div>
+      </div>
+    </div>
+    <div class="funnel-step">
+      <div class="funnel-num">4</div>
+      <div class="funnel-body">
+        <div class="funnel-label">Работа с возражениями</div>
+        ${objections}
+      </div>
+    </div>
+    <div class="funnel-step close-step">
+      <div class="funnel-num">5</div>
+      <div class="funnel-body">
+        <div class="funnel-label">Закрытие на запись</div>
+        <div class="funnel-text">Предложить два конкретных окна на этой неделе — «вам удобнее в четверг в 17:00 или в субботу в 11:00?» — и записать. Подтвердить SMS-напоминанием.</div>
+        <div class="funnel-goal">Если запись не состоялась — зафиксировать итог и договорённость о следующем шаге</div>
+      </div>
+    </div>`;
+
+  $('#scriptBackdrop').classList.remove('hidden');
+  $('#scriptDrawer').classList.remove('hidden');
+  $('#scriptDrawer').scrollTop = 0;
+}
+
+function closeScript() {
+  $('#scriptDrawer').classList.add('hidden');
+  $('#scriptBackdrop').classList.add('hidden');
+}
+
+$('#drawerClose').addEventListener('click', closeCard);
+$('#btnScript').addEventListener('click', openScript);
+$('#scriptClose').addEventListener('click', closeScript);
+$('#scriptBackdrop').addEventListener('click', closeScript);
+
+$('#btnSend').addEventListener('click', () => {
+  $('#waNote').classList.remove('hidden');
+  $('#btnSend').disabled = true;
+});
+
+$('#btnCopy').addEventListener('click', () => {
+  navigator.clipboard && navigator.clipboard.writeText($('#dMessage').innerText);
+  $('#btnCopy').textContent = '✓ Скопировано';
+  setTimeout(() => { $('#btnCopy').textContent = 'Копировать'; }, 1600);
+});
 
 /* ---------- Итог звонка ---------- */
 document.querySelectorAll('.outcome-btn').forEach(btn => {

@@ -342,57 +342,94 @@
 
   </main>
 
-  <!-- ============ Карточка пациента ============ -->
-  <div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
-  <aside class="drawer hidden" id="drawer">
+  <!-- ============ Карточка пациента (на весь экран) ============ -->
+  <div class="pmodal hidden" id="pmodal">
     <button class="drawer-close" id="drawerClose">✕</button>
+    <div class="pmodal-inner">
 
-    <div class="drawer-head">
-      <div class="p-avatar big" id="dAvatar">АС</div>
-      <div>
-        <h2 id="dName">—</h2>
-        <div class="drawer-phone" id="dPhone">—</div>
-      </div>
-    </div>
-
-    <div class="drawer-section">
-      <h3><img src="assets/icons/doc.png" alt="" class="ico-mini">Незаконченное лечение</h3>
-      <div class="treat-box" id="dTreat"></div>
-    </div>
-
-    <div class="drawer-section">
-      <h3><img src="assets/icons/calendar.png" alt="" class="ico-mini">История визитов</h3>
-      <ul class="visit-list" id="dVisits"></ul>
-    </div>
-
-    <div class="drawer-section">
-      <h3><img src="assets/icons/brain.png" alt="" class="ico-mini">Инсайт ИИ: на что реагирует пациент</h3>
-      <div class="insight-box" id="dInsight"></div>
-    </div>
-
-    <div class="drawer-section">
-      <h3><img src="assets/icons/phone.png" alt="" class="ico-mini">Сценарий звонка</h3>
-      <div class="script-box" id="dScript"></div>
-    </div>
-
-    <div class="drawer-section">
-      <h3><img src="assets/icons/check.png" alt="" class="ico-mini">Итог звонка</h3>
-      <div class="outcome-box">
-        <div class="outcome-btns" id="outcomeBtns">
-          <button class="outcome-btn" data-oc="booked">✅ Записался</button>
-          <button class="outcome-btn" data-oc="callback">📅 Перезвонить позже</button>
-          <button class="outcome-btn" data-oc="noanswer">📵 Не дозвонились</button>
-          <button class="outcome-btn" data-oc="refused">❌ Отказ</button>
-          <button class="outcome-btn" data-oc="wrong">⚠️ Неверный номер</button>
+      <header class="pmodal-head">
+        <div class="p-avatar big" id="dAvatar">АС</div>
+        <div class="pmodal-title">
+          <h2 id="dName">—</h2>
+          <div class="drawer-phone" id="dPhone">—</div>
         </div>
-        <textarea class="outcome-comment" id="outcomeComment" rows="2"
-          placeholder="Комментарий к звонку — ИИ учтёт его при следующем контакте"></textarea>
-        <button class="btn-primary btn-save" id="btnSaveOutcome">Сохранить результат</button>
-        <div class="sent-note hidden" id="sentNote">
-          <img src="assets/icons/check.png" alt="">
-          Результат сохранён. При следующем анализе пациент не будет предложен повторно.
+        <div class="pmodal-chip" id="dHeadChip"></div>
+      </header>
+
+      <div class="pmodal-grid">
+        <div class="pmodal-col">
+          <div class="drawer-section">
+            <h3><img src="assets/icons/doc.png" alt="" class="ico-mini">Незаконченное лечение</h3>
+            <div class="treat-box" id="dTreat"></div>
+          </div>
+          <div class="drawer-section">
+            <h3><img src="assets/icons/calendar.png" alt="" class="ico-mini">История визитов</h3>
+            <ul class="visit-list" id="dVisits"></ul>
+          </div>
+          <div class="drawer-section">
+            <h3><img src="assets/icons/brain.png" alt="" class="ico-mini">Инсайт ИИ: на что реагирует пациент</h3>
+            <div class="insight-box" id="dInsight"></div>
+          </div>
+        </div>
+
+        <div class="pmodal-col">
+          <div class="drawer-section">
+            <h3><img src="assets/icons/envelope.png" alt="" class="ico-mini">Персональное сообщение</h3>
+            <div class="msg-box">
+              <div class="msg-text" id="dMessage" contenteditable="true"></div>
+              <div class="msg-hint">Текст можно отредактировать перед отправкой</div>
+            </div>
+            <div class="drawer-actions">
+              <button class="btn-primary btn-wa" id="btnSend">
+                <img src="assets/icons/chat.png" alt="">Отправить в WhatsApp
+              </button>
+              <button class="btn-ghost" id="btnScript">
+                <img src="assets/icons/phone.png" alt="">Сценарий звонка
+              </button>
+              <button class="btn-ghost" id="btnCopy">Копировать</button>
+            </div>
+            <div class="sent-note hidden" id="waNote">
+              <img src="assets/icons/check.png" alt="">Сообщение отправлено в WhatsApp.
+            </div>
+          </div>
+
+          <div class="drawer-section">
+            <h3><img src="assets/icons/check.png" alt="" class="ico-mini">Итог контакта</h3>
+            <div class="outcome-box">
+              <div class="outcome-btns" id="outcomeBtns">
+                <button class="outcome-btn" data-oc="booked">✅ Записался</button>
+                <button class="outcome-btn" data-oc="callback">📅 Перезвонить позже</button>
+                <button class="outcome-btn" data-oc="noanswer">📵 Не дозвонились</button>
+                <button class="outcome-btn" data-oc="refused">❌ Отказ</button>
+                <button class="outcome-btn" data-oc="wrong">⚠️ Неверный номер</button>
+              </div>
+              <textarea class="outcome-comment" id="outcomeComment" rows="2"
+                placeholder="Комментарий — ИИ учтёт его при следующем контакте"></textarea>
+              <button class="btn-primary btn-save" id="btnSaveOutcome">Сохранить результат</button>
+              <div class="sent-note hidden" id="sentNote">
+                <img src="assets/icons/check.png" alt="">
+                Результат сохранён. При следующем анализе пациент не будет предложен повторно.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+    </div>
+  </div>
+
+  <!-- ============ Сценарий звонка (боковая панель) ============ -->
+  <div class="script-backdrop hidden" id="scriptBackdrop"></div>
+  <aside class="script-drawer hidden" id="scriptDrawer">
+    <button class="drawer-close script-close" id="scriptClose">✕</button>
+    <div class="script-head">
+      <h2>Сценарий звонка</h2>
+      <div class="script-sub" id="scriptPatient">—</div>
+    </div>
+    <div id="dScript"></div>
+    <div class="script-footnote">
+      Если записать не удалось — зафиксируйте итог в карточке: ИИ учтёт результат
+      и подберёт следующий шаг.
     </div>
   </aside>
 
