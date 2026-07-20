@@ -391,9 +391,7 @@ function openCard(p) {
   document.querySelectorAll('.outcome-btn').forEach(b => b.classList.remove('selected'));
   $('#outcomeComment').value = '';
   $('#sentNote').classList.add('hidden');
-  $('#waNote').classList.add('hidden');
   $('#btnSaveOutcome').disabled = false;
-  $('#btnSend').disabled = false;
 
   $('#pmodal').classList.remove('hidden');
   $('#pmodal').scrollTop = 0;
@@ -491,11 +489,6 @@ $('#drawerClose').addEventListener('click', closeCard);
 $('#btnScript').addEventListener('click', openScript);
 $('#scriptClose').addEventListener('click', closeScript);
 $('#scriptBackdrop').addEventListener('click', closeScript);
-
-$('#btnSend').addEventListener('click', () => {
-  $('#waNote').classList.remove('hidden');
-  $('#btnSend').disabled = true;
-});
 
 $('#btnCopy').addEventListener('click', () => {
   navigator.clipboard && navigator.clipboard.writeText($('#dMessage').innerText);
