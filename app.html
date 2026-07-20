@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Точка роста АйТи — Возврат пациентов</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="stylesheet" href="css/app.css?v=1">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ Сайдбар ============ -->
+  <aside class="sidebar">
+    <div class="side-logo">
+      <img src="assets/logo-mark.png" alt="">
+      <span>Точка роста <b>АйТи</b></span>
+    </div>
+
+    <div class="clinic-chip">
+      <span class="clinic-ico"><img src="assets/icons/tooth.png" alt=""></span>
+      <div>
+        <div class="clinic-name">Стоматология «Дента+»</div>
+        <div class="clinic-sub">г. Москва, ул. Лесная, 7</div>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      <a href="#" class="side-link active">
+        <img src="assets/icons/heart.png" alt="">
+        <span>Возврат пациентов</span>
+      </a>
+      <a href="#" class="side-link">
+        <img src="assets/icons/robot.png" alt="">
+        <span>Умный помощник 24/7</span>
+      </a>
+      <a href="#" class="side-link">
+        <img src="assets/icons/headset.png" alt="">
+        <span>Анализ звонков</span>
+      </a>
+      <a href="#" class="side-link">
+        <img src="assets/icons/chart.png" alt="">
+        <span>Отчёты</span>
+      </a>
+      <a href="#" class="side-link">
+        <img src="assets/icons/lock.png" alt="">
+        <span>Настройки</span>
+      </a>
+    </nav>
+
+    <div class="side-user">
+      <div class="side-avatar">ЕК</div>
+      <div>
+        <div class="side-user-name">Елена Ковалёва</div>
+        <div class="side-user-role">Администратор</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ Основная область ============ -->
+  <main class="main">
+
+    <header class="topbar">
+      <div>
+        <h1>Возврат пациентов из картотеки</h1>
+        <p class="topbar-sub">ИИ находит пациентов с незаконченным лечением и готовит персональные сообщения</p>
+      </div>
+      <div class="topbar-date" id="todayLabel"></div>
+    </header>
+
+    <!-- Шаг 1. Период -->
+    <section class="panel period-panel" id="periodPanel">
+      <div class="panel-head">
+        <span class="step-badge">Шаг 1</span>
+        <h2>Выберите период визитов для анализа</h2>
+      </div>
+      <div class="period-row">
+        <label class="date-field">
+          <span>С даты</span>
+          <input type="date" id="dateFrom" value="2026-01-01">
+        </label>
+        <label class="date-field">
+          <span>По дату</span>
+          <input type="date" id="dateTo" value="2026-06-30">
+        </label>
+        <div class="preset-row">
+          <button class="preset" data-months="1">Месяц</button>
+          <button class="preset" data-months="3">Квартал</button>
+          <button class="preset active" data-months="6">Полгода</button>
+        </div>
+        <button class="btn-primary" id="btnAnalyze">
+          <img src="assets/icons/brain.png" alt="">
+          Проанализировать картотеку
+        </button>
+      </div>
+    </section>
+
+    <!-- Шаг 2. Анализ -->
+    <section class="panel analyze-panel hidden" id="analyzePanel">
+      <div class="analyze-inner">
+        <div class="pulse-ring"><img src="assets/icons/brain.png" alt=""></div>
+        <h2>ИИ анализирует картотеку…</h2>
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="analyze-log" id="analyzeLog"></div>
+      </div>
+    </section>
+
+    <!-- Шаг 3. Результаты -->
+    <section class="results hidden" id="resultsPanel">
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="statTotal">248</div>
+          <div class="stat-label">пациентов за период</div>
+        </div>
+        <div class="stat-card stat-green">
+          <div class="stat-num" id="statDone">217</div>
+          <div class="stat-label">лечение завершено</div>
+        </div>
+        <div class="stat-card stat-red">
+          <div class="stat-num" id="statOpen">31</div>
+          <div class="stat-label">лечение не закончено</div>
+        </div>
+        <div class="stat-card stat-blue">
+          <div class="stat-num">≈ 1,4 млн ₽</div>
+          <div class="stat-label">потенциальная выручка от возврата</div>
+        </div>
+      </div>
+
+      <div class="panel list-panel">
+        <div class="panel-head panel-head-split">
+          <div>
+            <span class="step-badge">Шаг 2</span>
+            <h2>Пациенты с незаконченным лечением</h2>
+          </div>
+          <div class="list-tabs">
+            <button class="tab active">Требуют возврата <b id="tabOpenCount">31</b></button>
+            <button class="tab">Завершили лечение <b>217</b></button>
+          </div>
+        </div>
+
+        <div class="list-note">ИИ отсортировал пациентов по приоритету: сумма незавершённого плана × вероятность отклика</div>
+        <div class="patient-list" id="patientList"></div>
+        <button class="btn-ghost show-more">Показать ещё 24 пациента</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ============ Карточка пациента ============ -->
+  <div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
+  <aside class="drawer hidden" id="drawer">
+    <button class="drawer-close" id="drawerClose">✕</button>
+
+    <div class="drawer-head">
+      <div class="p-avatar big" id="dAvatar">АС</div>
+      <div>
+        <h2 id="dName">—</h2>
+        <div class="drawer-phone" id="dPhone">—</div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <h3><img src="assets/icons/doc.png" alt="" class="ico-mini">Незаконченное лечение</h3>
+      <div class="treat-box" id="dTreat"></div>
+    </div>
+
+    <div class="drawer-section">
+      <h3><img src="assets/icons/calendar.png" alt="" class="ico-mini">История визитов</h3>
+      <ul class="visit-list" id="dVisits"></ul>
+    </div>
+
+    <div class="drawer-section">
+      <h3><img src="assets/icons/brain.png" alt="" class="ico-mini">Инсайт ИИ: на что реагирует пациент</h3>
+      <div class="insight-box" id="dInsight"></div>
+    </div>
+
+    <div class="drawer-section">
+      <h3><img src="assets/icons/envelope.png" alt="" class="ico-mini">Персональное сообщение</h3>
+      <div class="msg-box">
+        <div class="msg-text" id="dMessage" contenteditable="true"></div>
+        <div class="msg-hint">Текст можно отредактировать перед отправкой</div>
+      </div>
+      <div class="drawer-actions">
+        <button class="btn-primary btn-wa" id="btnSend">
+          <img src="assets/icons/chat.png" alt="">Отправить в WhatsApp
+        </button>
+        <button class="btn-ghost" id="btnCall">
+          <img src="assets/icons/phone.png" alt="">Сценарий звонка
+        </button>
+        <button class="btn-ghost" id="btnCopy">Копировать</button>
+      </div>
+      <div class="sent-note hidden" id="sentNote">
+        <img src="assets/icons/check.png" alt="">Сообщение отправлено. Пациент помечен «В работе».
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script src="js/app.js?v=1"></script>
+</body>
+</html>
