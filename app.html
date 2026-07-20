@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Точка роста АйТи — Возврат пациентов</title>
+<title>Точка роста АйТи — ИИ-куратор</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="css/app.css?v=1">
+<link rel="stylesheet" href="css/app.css?v=2">
 </head>
 <body>
 
@@ -27,25 +27,32 @@
     </div>
 
     <nav class="side-nav">
-      <a href="#" class="side-link active">
-        <img src="assets/icons/heart.png" alt="">
-        <span>Возврат пациентов</span>
+      <a href="#" class="side-link active" data-screen="day">
+        <img src="assets/icons/calendar2.png" alt="">
+        <span>Мой день</span>
+        <b class="side-count" id="navTaskCount">8</b>
       </a>
-      <a href="#" class="side-link">
+      <a href="#" class="side-link" data-screen="analyze">
+        <img src="assets/icons/search.png" alt="">
+        <span>Анализ картотеки</span>
+      </a>
+      <a href="#" class="side-link" data-screen="manager">
+        <img src="assets/icons/chart.png" alt="">
+        <span>Дашборд руководителя</span>
+      </a>
+      <a href="#" class="side-link" data-screen="integration">
+        <img src="assets/icons/globe.png" alt="">
+        <span>Интеграция с МИС</span>
+      </a>
+
+      <div class="side-divider">Другие модули</div>
+      <a href="#" class="side-link side-link-dim">
         <img src="assets/icons/robot.png" alt="">
         <span>Умный помощник 24/7</span>
       </a>
-      <a href="#" class="side-link">
+      <a href="#" class="side-link side-link-dim">
         <img src="assets/icons/headset.png" alt="">
         <span>Анализ звонков</span>
-      </a>
-      <a href="#" class="side-link">
-        <img src="assets/icons/chart.png" alt="">
-        <span>Отчёты</span>
-      </a>
-      <a href="#" class="side-link">
-        <img src="assets/icons/lock.png" alt="">
-        <span>Настройки</span>
       </a>
     </nav>
 
@@ -61,90 +68,276 @@
   <!-- ============ Основная область ============ -->
   <main class="main">
 
-    <header class="topbar">
-      <div>
-        <h1>Возврат пациентов из картотеки</h1>
-        <p class="topbar-sub">ИИ находит пациентов с незаконченным лечением и готовит персональные сообщения</p>
-      </div>
-      <div class="topbar-date" id="todayLabel"></div>
-    </header>
-
-    <!-- Шаг 1. Период -->
-    <section class="panel period-panel" id="periodPanel">
-      <div class="panel-head">
-        <span class="step-badge">Шаг 1</span>
-        <h2>Выберите период визитов для анализа</h2>
-      </div>
-      <div class="period-row">
-        <label class="date-field">
-          <span>С даты</span>
-          <input type="date" id="dateFrom" value="2026-01-01">
-        </label>
-        <label class="date-field">
-          <span>По дату</span>
-          <input type="date" id="dateTo" value="2026-06-30">
-        </label>
-        <div class="preset-row">
-          <button class="preset" data-months="1">Месяц</button>
-          <button class="preset" data-months="3">Квартал</button>
-          <button class="preset active" data-months="6">Полгода</button>
+    <!-- ======== ЭКРАН 1. Мой день ======== -->
+    <section class="screen" id="screen-day">
+      <header class="topbar">
+        <div>
+          <h1>Мой день</h1>
+          <p class="topbar-sub">Задачи на обзвон, подготовленные ИИ после ночной синхронизации с МИС</p>
         </div>
-        <button class="btn-primary" id="btnAnalyze">
-          <img src="assets/icons/brain.png" alt="">
-          Проанализировать картотеку
-        </button>
-      </div>
-    </section>
-
-    <!-- Шаг 2. Анализ -->
-    <section class="panel analyze-panel hidden" id="analyzePanel">
-      <div class="analyze-inner">
-        <div class="pulse-ring"><img src="assets/icons/brain.png" alt=""></div>
-        <h2>ИИ анализирует картотеку…</h2>
-        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
-        <div class="analyze-log" id="analyzeLog"></div>
-      </div>
-    </section>
-
-    <!-- Шаг 3. Результаты -->
-    <section class="results hidden" id="resultsPanel">
+        <div class="topbar-right">
+          <div class="sync-chip"><span class="sync-dot"></span>База синхронизирована сегодня в 03:12</div>
+          <div class="topbar-date" id="todayLabel"></div>
+        </div>
+      </header>
 
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-num" id="statTotal">248</div>
-          <div class="stat-label">пациентов за период</div>
-        </div>
-        <div class="stat-card stat-green">
-          <div class="stat-num" id="statDone">217</div>
-          <div class="stat-label">лечение завершено</div>
-        </div>
-        <div class="stat-card stat-red">
-          <div class="stat-num" id="statOpen">31</div>
-          <div class="stat-label">лечение не закончено</div>
+          <div class="stat-num">9</div>
+          <div class="stat-label">задач на сегодня</div>
         </div>
         <div class="stat-card stat-blue">
-          <div class="stat-num">≈ 1,4 млн ₽</div>
-          <div class="stat-label">потенциальная выручка от возврата</div>
+          <div class="stat-num" id="statCalled">4</div>
+          <div class="stat-label">обзвонено</div>
+        </div>
+        <div class="stat-card stat-green">
+          <div class="stat-num" id="statBooked">2</div>
+          <div class="stat-label">записались</div>
+        </div>
+        <div class="stat-card stat-green">
+          <div class="stat-num" id="statMoney">≈ 152 000 ₽</div>
+          <div class="stat-label">возвращено сегодня (по планам лечения)</div>
         </div>
       </div>
 
-      <div class="panel list-panel">
+      <div class="panel">
         <div class="panel-head panel-head-split">
-          <div>
-            <span class="step-badge">Шаг 2</span>
-            <h2>Пациенты с незаконченным лечением</h2>
+          <h2>Позвонить сегодня</h2>
+          <span class="panel-note">приоритет рассчитан ИИ: сумма плана × вероятность отклика × срочность</span>
+        </div>
+        <div class="task-list" id="taskListPending"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Перезвонить в назначенное время</h2></div>
+        <div class="task-list" id="taskListCallback"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head panel-head-split">
+          <h2>Обработано сегодня</h2>
+          <span class="panel-note">результат учитывается при следующем анализе — повторно эти пациенты не всплывут</span>
+        </div>
+        <div class="task-list" id="taskListDone"></div>
+      </div>
+    </section>
+
+    <!-- ======== ЭКРАН 2. Анализ картотеки ======== -->
+    <section class="screen hidden" id="screen-analyze">
+      <header class="topbar">
+        <div>
+          <h1>Анализ картотеки</h1>
+          <p class="topbar-sub">ИИ получает данные из МИС по API и сам находит, кого вернуть в клинику</p>
+        </div>
+        <div class="topbar-right">
+          <div class="sync-chip"><span class="sync-dot"></span>Синхронизировано в 03:12 · 4 812 пациентов</div>
+        </div>
+      </header>
+
+      <div class="auto-note">
+        <img src="assets/icons/brain.png" alt="">
+        <div>
+          <b>Автоанализ выполнен сегодня в 03:14</b> — после каждой синхронизации ИИ анализирует базу сам,
+          без куратора. Пациенты, с которыми уже связались, исключены из повторного анализа.
+        </div>
+      </div>
+
+      <!-- ручной анализ за период -->
+      <section class="panel period-panel" id="periodPanel">
+        <div class="panel-head">
+          <h2>Ручной анализ за период</h2>
+        </div>
+        <div class="period-row">
+          <label class="date-field">
+            <span>С даты</span>
+            <input type="date" id="dateFrom" value="2026-01-01">
+          </label>
+          <label class="date-field">
+            <span>По дату</span>
+            <input type="date" id="dateTo" value="2026-06-30">
+          </label>
+          <div class="preset-row">
+            <button class="preset" data-months="1">Месяц</button>
+            <button class="preset" data-months="3">Квартал</button>
+            <button class="preset active" data-months="6">Полгода</button>
           </div>
-          <div class="list-tabs">
-            <button class="tab active">Требуют возврата <b id="tabOpenCount">31</b></button>
-            <button class="tab">Завершили лечение <b>217</b></button>
+          <button class="btn-primary" id="btnAnalyze">
+            <img src="assets/icons/brain.png" alt="">
+            Проанализировать
+          </button>
+        </div>
+      </section>
+
+      <!-- анимация анализа -->
+      <section class="panel analyze-panel hidden" id="analyzePanel">
+        <div class="analyze-inner">
+          <div class="pulse-ring"><img src="assets/icons/brain.png" alt=""></div>
+          <h2>ИИ анализирует картотеку…</h2>
+          <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="analyze-log" id="analyzeLog"></div>
+        </div>
+      </section>
+
+      <!-- результаты -->
+      <section class="results" id="resultsPanel">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-num">248</div>
+            <div class="stat-label">пациентов за период</div>
+          </div>
+          <div class="stat-card stat-green">
+            <div class="stat-num">217</div>
+            <div class="stat-label">лечение завершено</div>
+          </div>
+          <div class="stat-card stat-red">
+            <div class="stat-num">31</div>
+            <div class="stat-label">лечение не закончено</div>
+          </div>
+          <div class="stat-card stat-blue">
+            <div class="stat-num">≈ 1,4 млн ₽</div>
+            <div class="stat-label">потенциальная выручка от возврата</div>
           </div>
         </div>
 
-        <div class="list-note">ИИ отсортировал пациентов по приоритету: сумма незавершённого плана × вероятность отклика</div>
-        <div class="patient-list" id="patientList"></div>
-        <button class="btn-ghost show-more">Показать ещё 24 пациента</button>
+        <div class="panel list-panel">
+          <div class="panel-head panel-head-split">
+            <div><h2>Пациенты с незаконченным лечением</h2></div>
+            <div class="list-tabs">
+              <button class="tab active">Требуют возврата <b>31</b></button>
+              <button class="tab">В работе <b>4</b></button>
+              <button class="tab">Завершили лечение <b>217</b></button>
+            </div>
+          </div>
+          <div class="patient-list" id="patientList"></div>
+          <button class="btn-ghost show-more">Показать ещё 22 пациента</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ======== ЭКРАН 3. Дашборд руководителя ======== -->
+    <section class="screen hidden" id="screen-manager">
+      <header class="topbar">
+        <div>
+          <h1>Дашборд руководителя</h1>
+          <p class="topbar-sub">Эффективность возврата пациентов — июль 2026</p>
+        </div>
+        <div class="topbar-right"><div class="topbar-date">июль 2026</div></div>
+      </header>
+
+      <div class="stats-row">
+        <div class="stat-card stat-green">
+          <div class="stat-num">28</div>
+          <div class="stat-label">пациентов возвращено за месяц</div>
+        </div>
+        <div class="stat-card stat-blue">
+          <div class="stat-num">1 240 000 ₽</div>
+          <div class="stat-label">возвращённая выручка</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">34%</div>
+          <div class="stat-label">конверсия обзвона в запись</div>
+        </div>
+        <div class="stat-card stat-green">
+          <div class="stat-num">≈ 93 000 ₽/мес</div>
+          <div class="stat-label">экономия на кураторе</div>
+        </div>
       </div>
 
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Возвращённая выручка по месяцам, тыс ₽</h2></div>
+          <div class="bar-chart" id="revChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Причины отказов</h2></div>
+          <div class="hbar-chart" id="refuseChart"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Администраторы</h2></div>
+        <table class="admin-table">
+          <thead>
+            <tr><th>Администратор</th><th>Звонков</th><th>Дозвон</th><th>Записей</th><th>Конверсия</th><th>Возвращённая выручка</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="mini-avatar">ЕК</span>Елена Ковалёва</td><td>96</td><td>71%</td><td>34</td><td>35%</td><td>640 000 ₽</td></tr>
+            <tr><td><span class="mini-avatar mini-avatar2">ИС</span>Ирина Соловьёва</td><td>88</td><td>66%</td><td>27</td><td>31%</td><td>600 000 ₽</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="economy-banner">
+        <div class="economy-title">Экономика: ИИ-куратор вместо куратора в штате</div>
+        <div class="economy-cols">
+          <div class="economy-col">
+            <div class="economy-label">Куратор в штате</div>
+            <div class="economy-val">≈ 80–95 тыс ₽/мес</div>
+            <div class="economy-sub">+ налоги, обучение, отпуска, контроль качества</div>
+          </div>
+          <div class="economy-arrow">→</div>
+          <div class="economy-col">
+            <div class="economy-label">ИИ-куратор «Точка роста»</div>
+            <div class="economy-val">включён в подписку</div>
+            <div class="economy-sub">анализирует всю базу каждую ночь, не болеет и не увольняется</div>
+          </div>
+          <div class="economy-total">
+            <div class="economy-label">Экономия</div>
+            <div class="economy-val big">≈ 1,1 млн ₽/год</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== ЭКРАН 4. Интеграция с МИС ======== -->
+    <section class="screen hidden" id="screen-integration">
+      <header class="topbar">
+        <div>
+          <h1>Интеграция с МИС</h1>
+          <p class="topbar-sub">Система получает данные из базы клиники по API — ничего не нужно вводить вручную</p>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="integration-head">
+          <div class="int-sys">
+            <div class="int-logo">МИС</div>
+            <div>
+              <div class="int-name">IDENT · подключение по API</div>
+              <div class="int-sub">чтение: пациенты, планы лечения, визиты, оплаты, звонки</div>
+            </div>
+          </div>
+          <div class="int-status"><span class="sync-dot"></span>Подключено</div>
+          <button class="btn-primary" id="btnSync"><img src="assets/icons/bolt.png" alt="">Синхронизировать сейчас</button>
+        </div>
+
+        <div class="int-grid">
+          <div class="int-cell"><div class="int-num">4 812</div><div class="int-label">пациентов</div></div>
+          <div class="int-cell"><div class="int-num">3 105</div><div class="int-label">планов лечения</div></div>
+          <div class="int-cell"><div class="int-num">28 340</div><div class="int-label">визитов</div></div>
+          <div class="int-cell"><div class="int-num">21 730</div><div class="int-label">оплат</div></div>
+          <div class="int-cell"><div class="int-num">9 480</div><div class="int-label">звонков и обращений</div></div>
+        </div>
+
+        <div class="int-settings">
+          <div class="int-setting"><b>Расписание синхронизации:</b> ежедневно в 03:00</div>
+          <div class="int-setting"><b>Автоанализ после синхронизации:</b> <span class="toggle on">вкл</span></div>
+          <div class="int-setting"><b>Хранение данных:</b> сервер клиники, данные не покидают контур</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Журнал синхронизаций</h2></div>
+        <table class="admin-table log-table">
+          <thead><tr><th>Дата</th><th>Результат</th><th>Изменений</th><th>Автоанализ</th></tr></thead>
+          <tbody id="syncLog">
+            <tr><td>20.07.2026 03:12</td><td><span class="ok-chip">успешно</span></td><td>132 обновления</td><td>12 новых задач</td></tr>
+            <tr><td>19.07.2026 03:09</td><td><span class="ok-chip">успешно</span></td><td>97 обновлений</td><td>9 новых задач</td></tr>
+            <tr><td>18.07.2026 03:11</td><td><span class="ok-chip">успешно</span></td><td>145 обновлений</td><td>14 новых задач</td></tr>
+            <tr><td>17.07.2026 03:08</td><td><span class="ok-chip">успешно</span></td><td>88 обновлений</td><td>7 новых задач</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
   </main>
@@ -178,28 +371,31 @@
     </div>
 
     <div class="drawer-section">
-      <h3><img src="assets/icons/envelope.png" alt="" class="ico-mini">Персональное сообщение</h3>
-      <div class="msg-box">
-        <div class="msg-text" id="dMessage" contenteditable="true"></div>
-        <div class="msg-hint">Текст можно отредактировать перед отправкой</div>
-      </div>
-      <div class="drawer-actions">
-        <button class="btn-primary btn-wa" id="btnSend">
-          <img src="assets/icons/chat.png" alt="">Отправить в WhatsApp
-        </button>
-        <button class="btn-ghost" id="btnCall">
-          <img src="assets/icons/phone.png" alt="">Сценарий звонка
-        </button>
-        <button class="btn-ghost" id="btnCopy">Копировать</button>
-      </div>
-      <div class="sent-note hidden" id="sentNote">
-        <img src="assets/icons/check.png" alt="">Сообщение отправлено. Пациент помечен «В работе».
+      <h3><img src="assets/icons/phone.png" alt="" class="ico-mini">Сценарий звонка</h3>
+      <div class="script-box" id="dScript"></div>
+    </div>
+
+    <div class="drawer-section">
+      <h3><img src="assets/icons/check.png" alt="" class="ico-mini">Итог звонка</h3>
+      <div class="outcome-box">
+        <div class="outcome-btns" id="outcomeBtns">
+          <button class="outcome-btn" data-oc="booked">✅ Записался</button>
+          <button class="outcome-btn" data-oc="callback">📅 Перезвонить позже</button>
+          <button class="outcome-btn" data-oc="noanswer">📵 Не дозвонились</button>
+          <button class="outcome-btn" data-oc="refused">❌ Отказ</button>
+          <button class="outcome-btn" data-oc="wrong">⚠️ Неверный номер</button>
+        </div>
+        <textarea class="outcome-comment" id="outcomeComment" rows="2"
+          placeholder="Комментарий к звонку — ИИ учтёт его при следующем контакте"></textarea>
+        <button class="btn-primary btn-save" id="btnSaveOutcome">Сохранить результат</button>
+        <div class="sent-note hidden" id="sentNote">
+          <img src="assets/icons/check.png" alt="">
+          Результат сохранён. При следующем анализе пациент не будет предложен повторно.
+        </div>
       </div>
     </div>
   </aside>
 
-</div>
-
-<script src="js/app.js?v=1"></script>
+<script src="js/app.js?v=2"></script>
 </body>
 </html>

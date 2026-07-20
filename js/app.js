@@ -1,40 +1,70 @@
-/* ============ Точка роста АйТи — логика демо-приложения ============ */
+/* ============ Точка роста АйТи — логика демо-приложения (ИИ-куратор) ============ */
 
-/* ---------- Данные (демо) ---------- */
+/* ---------- Справочник инсайтов ---------- */
 const INSIGHTS = {
   promo: {
     chip: 'chip-promo', icon: '🏷️', label: 'Реагирует на акции',
     detail: 'Дважды записывался после рассылок со скидкой (март, октябрь). Средний чек растёт при спецпредложении.',
-    reco: 'Предложить акцию −15% на продолжение лечения до конца месяца.'
+    reco: 'Вести разговор через выгоду: акция −15% на завершение плана до конца месяца.',
+    objections: [
+      ['«Дорого»', 'Сейчас действует −15% на завершение плана — это заметно меньше, чем лечение осложнения потом.'],
+      ['«Я подумаю»', 'Акция до конца месяца. Могу забронировать время без предоплаты — не подойдёт, просто отменим.']
+    ]
   },
   credit: {
     chip: 'chip-credit', icon: '💳', label: 'Важна рассрочка',
     detail: 'Оба крупных лечения оплачивал в рассрочку на 6 месяцев. Отложил протезирование после озвучивания полной цены.',
-    reco: 'Сделать акцент на рассрочке 0% без переплат.'
+    reco: 'Не называть полную сумму сразу — сначала рассрочка 0% и платёж в месяц.',
+    objections: [
+      ['«Дорого сразу»', 'Можно в рассрочку 0% на 6 месяцев без первого взноса — получается от 5 300 ₽ в месяц.'],
+      ['«Не уверена»', 'Запишу на бесплатную консультацию — врач покажет варианты по стоимости, решение потом.']
+    ]
   },
   care: {
     chip: 'chip-care', icon: '💚', label: 'Ценит заботу и врача',
     detail: 'Ходит только к «своему» врачу, оставил благодарный отзыв. Реагирует на личное внимание, а не на скидки.',
-    reco: 'Написать от имени лечащего врача с заботой о результате.'
+    reco: 'Звонить от имени лечащего врача, без продающих формулировок.',
+    objections: [
+      ['«Я подумаю»', 'Доктор сам просил связаться — он следит за вашим результатом. Приём без навязывания: осмотр и ответы на вопросы.'],
+      ['«Переживаю»', 'Доктор всё делает аккуратно, вы же его знаете. В этот визит — только посмотреть и обсудить план.']
+    ]
   },
   evening: {
     chip: 'chip-evening', icon: '🌙', label: 'Записывается на вечер',
     detail: 'Все визиты — после 18:00, дважды переносил дневные записи. Работает в графике 5/2.',
-    reco: 'Предложить конкретные вечерние окна на этой неделе.'
+    reco: 'Сразу предлагать конкретные вечерние окна, дневные не озвучивать.',
+    objections: [
+      ['«Нет времени»', 'Есть окна после 19:00 — четверг 19:30 или пятница 20:00, приём займёт полчаса.'],
+      ['«Позвоните позже»', 'Могу поставить бронь на вечер и напомнить накануне — если не получится, перенесём.']
+    ]
   },
   family: {
     chip: 'chip-family', icon: '👨‍👩‍👧', label: 'Семейный пациент',
-    detail: 'Приводит двоих детей, жена лечится в этой же клинике. Реагирует на семейные предложения.',
-    reco: 'Предложить семейную программу и совместный визит с детьми.'
+    detail: 'Приводит двоих детей, муж лечится в этой же клинике. Реагирует на семейные предложения.',
+    reco: 'Предлагать совместный визит с детьми и семейную программу.',
+    objections: [
+      ['«Некогда, дети»', 'Можно совместить: вам приём, дочке в это же время плановый осмотр — по семейной программе бесплатно.'],
+      ['«Дорого на всех»', 'По семейной программе скидка 10% каждому члену семьи, и визиты можно ставить в один день.']
+    ]
   }
 };
 
+/* ---------- Статусы контакта ---------- */
+const STATUSES = {
+  booked:   { cls: 'st-booked',   icon: '✅', label: 'Записался' },
+  callback: { cls: 'st-callback', icon: '📅', label: 'Перезвонить' },
+  noanswer: { cls: 'st-noanswer', icon: '📵', label: 'Не дозвонились' },
+  refused:  { cls: 'st-refused',  icon: '❌', label: 'Отказ' },
+  wrong:    { cls: 'st-wrong',    icon: '⚠️', label: 'Неверный номер' }
+};
+
+/* ---------- Пациенты (демо-данные) ---------- */
 const PATIENTS = [
   {
     id: 1, name: 'Анна Смирнова', initials: 'АС', phone: '+7 912 345-67-89',
-    lastVisit: '14.03.2026', daysAgo: 128,
+    lastVisit: '14.03.2026', daysAgo: 128, planSum: '32 000 ₽', prio: 'high',
     treat: 'Пломба на 3.6 поставлена, <b>рекомендована коронка — не записалась</b>',
-    treatFull: 'Лечение кариеса 3.6 завершено 14.03.2026. Врач рекомендовал коронку на этот зуб — без неё высок риск скола стенки. Запись на протезирование не создана.',
+    treatFull: 'Лечение кариеса 3.6 завершено 14.03.2026. Врач рекомендовал коронку — без неё высок риск скола стенки. Запись на протезирование не создана.',
     insight: 'credit',
     visits: [
       ['14.03.2026', 'Лечение кариеса 3.6, пломба', 'оплата в рассрочку 6 мес.'],
@@ -42,11 +72,13 @@ const PATIENTS = [
       ['11.09.2025', 'Лечение пульпита 4.5', 'оплата в рассрочку 6 мес.'],
       ['15.04.2025', 'Профгигиена', 'оплата картой']
     ],
-    message: 'Анна, здравствуйте! Это стоматология «Дента+». Доктор Орлова напоминает: после лечения зуба 3.6 важно поставить коронку — без неё зуб может не выдержать нагрузку. {Сейчас коронку можно оформить в рассрочку 0% на 6 месяцев — без первого взноса и переплат.} Подобрать удобное время на этой неделе?'
+    reason: 'Напомнить о коронке на 3.6 — через рассрочку 0%',
+    argument: 'Коронку можно оформить в рассрочку 0% на 6 месяцев — без первого взноса, получается от 5 300 ₽ в месяц.',
+    status: { type: 'booked', detail: 'Записана на 24.07, 10:30 · протезирование', comment: 'Согласилась сразу, как услышала про рассрочку' }
   },
   {
     id: 2, name: 'Дмитрий Волков', initials: 'ДВ', phone: '+7 926 118-22-40',
-    lastVisit: '27.04.2026', daysAgo: 84,
+    lastVisit: '27.04.2026', daysAgo: 84, planSum: '46 000 ₽', prio: 'high',
     treat: 'Пролечено 2 кариеса из 4, <b>визиты по плану прерваны</b>',
     treatFull: 'По плану лечения — 4 кариеса. Пролечены зубы 1.5 и 1.6, на 2.4 и 2.5 пациент не записался. Последний визит 27.04.2026.',
     insight: 'promo',
@@ -56,11 +88,13 @@ const PATIENTS = [
       ['29.03.2026', 'Диагностика: план на 4 зуба', 'пришёл по акции «бесплатная диагностика»'],
       ['10.10.2025', 'Профгигиена по акции −20%', 'запись после SMS-рассылки']
     ],
-    message: 'Дмитрий, добрый день! Стоматология «Дента+». У вас пролечены 2 зуба из 4 по плану — осталось два небольших кариеса, лучше закрыть их, пока они не выросли в пульпит. {До конца месяца для вас действует скидка 15% на завершение плана лечения.} Записать вас на удобный день?'
+    reason: 'Завершить план лечения: осталось 2 кариеса из 4',
+    argument: 'До конца месяца действует скидка 15% на завершение плана лечения — два зуба можно закрыть за один визит.',
+    status: null
   },
   {
     id: 3, name: 'Мария Ковальчук', initials: 'МК', phone: '+7 903 777-51-12',
-    lastVisit: '05.02.2026', daysAgo: 165,
+    lastVisit: '05.02.2026', daysAgo: 165, planSum: '95 000 ₽', prio: 'high',
     treat: 'Удаление 4.6 выполнено, <b>имплантация отложена</b>',
     treatFull: 'Зуб 4.6 удалён 05.02.2026. Врач рекомендовал имплантацию в течение 3–6 месяцев, пока не началась убыль кости. Пациентка взяла паузу «подумать».',
     insight: 'care',
@@ -69,24 +103,28 @@ const PATIENTS = [
       ['20.01.2026', 'Острая боль, консультация д-ра Гусева', 'пришла по рекомендации подруги'],
       ['03.06.2025', 'Профгигиена (просила к д-ру Гусеву)', 'оплата картой']
     ],
-    message: 'Мария, здравствуйте! Это «Дента+», пишем от доктора Гусева. Прошло почти полгода после удаления зуба — сейчас самое подходящее время для имплантации, {дальше кость в этом месте начнёт убывать, и лечение станет сложнее. Доктор хотел бы сам посмотреть вас и спокойно обсудить варианты — без спешки и навязывания.} Подберём удобное время?'
+    reason: 'Имплантация 4.6 — окно 3–6 мес. закрывается',
+    argument: 'Звонок от имени доктора Гусева: он следит за результатом и хотел бы сам посмотреть, пока кость не начала убывать. Без спешки и навязывания.',
+    status: null
   },
   {
     id: 4, name: 'Игорь Романов', initials: 'ИР', phone: '+7 917 604-93-25',
-    lastVisit: '19.05.2026', daysAgo: 62,
+    lastVisit: '19.05.2026', daysAgo: 62, planSum: '18 000 ₽', prio: 'mid',
     treat: 'Каналы 2.6 пролечены, <b>не пришёл на постоянную пломбу</b>',
-    treatFull: 'Эндодонтическое лечение 2.6 завершено 19.05.2026, стоит временная пломба. Через 2–3 недели требовалась постоянная реставрация — записи нет, временная пломба уже изношена.',
+    treatFull: 'Эндодонтическое лечение 2.6 завершено 19.05.2026, стоит временная пломба. Постоянная реставрация требовалась через 2–3 недели — записи нет.',
     insight: 'evening',
     visits: [
       ['19.05.2026', 'Лечение каналов 2.6, визит 19:30', 'оплата картой'],
       ['12.05.2026', 'Лечение каналов 2.6, визит 20:00', 'перенёс дневную запись на вечер'],
       ['05.05.2026', 'Острая боль, приём 19:00', 'оплата картой']
     ],
-    message: 'Игорь, добрый вечер! Стоматология «Дента+». После лечения каналов у вас стоит временная пломба — её пора заменить на постоянную, иначе зуб может треснуть. {Есть вечерние окна: четверг 19:30 или пятница 20:00 — как вам удобно.} Забронировать одно из них?'
+    reason: 'Заменить временную пломбу на постоянную',
+    argument: 'Сразу предложить вечерние окна: четверг 19:30 или пятница 20:00 — приём займёт полчаса.',
+    status: { type: 'noanswer', detail: 'Попытка 1 из 3 · автоповтор 22.07', comment: '' }
   },
   {
     id: 5, name: 'Ольга Белова', initials: 'ОБ', phone: '+7 921 458-30-77',
-    lastVisit: '30.01.2026', daysAgo: 171,
+    lastVisit: '30.01.2026', daysAgo: 171, planSum: '28 000 ₽', prio: 'mid',
     treat: 'Брекеты: <b>пропущены 2 плановые коррекции</b>',
     treatFull: 'Ортодонтическое лечение с 09.2025. Коррекции нужны каждые 4–6 недель, последний визит 30.01.2026 — пропущены две активации. Лечение фактически остановлено.',
     insight: 'family',
@@ -95,11 +133,13 @@ const PATIENTS = [
       ['15.12.2025', 'Активация брекет-системы', 'записала мужа на гигиену'],
       ['28.09.2025', 'Установка брекет-системы', 'семейная скидка 10%']
     ],
-    message: 'Ольга, здравствуйте! «Дента+». Ваши брекеты ждут коррекции — прошло уже 5 месяцев, без активации лечение затягивается и результат «откатывается». {Можем совместить: вы на коррекцию, а дочке в это же время сделаем плановый осмотр — по семейной программе он бесплатный.} Подобрать время, удобное для вас двоих?'
+    reason: 'Возобновить коррекции брекетов — пауза 5 месяцев',
+    argument: 'Предложить совместить: ей коррекция, дочке в это же время плановый осмотр по семейной программе — бесплатно.',
+    status: null
   },
   {
     id: 6, name: 'Сергей Мельник', initials: 'СМ', phone: '+7 909 233-18-64',
-    lastVisit: '22.04.2026', daysAgo: 89,
+    lastVisit: '22.04.2026', daysAgo: 89, planSum: '14 000 ₽', prio: 'mid',
     treat: 'Профгигиена сделана, <b>лечение 2 кариесов не начато</b>',
     treatFull: 'На профгигиене 22.04.2026 выявлены кариесы 3.4 и 3.5. Пациент сказал «запишусь позже» — записи нет.',
     insight: 'promo',
@@ -107,11 +147,13 @@ const PATIENTS = [
       ['22.04.2026', 'Профгигиена, найдено 2 кариеса', 'пришёл по акции −20%'],
       ['18.11.2025', 'Профгигиена по акции', 'запись после рассылки']
     ],
-    message: 'Сергей, добрый день! Стоматология «Дента+». Весной на гигиене мы нашли два небольших кариеса — сейчас их лечение займёт один визит и минимум затрат, дальше будет дороже. {Для вас действует спецпредложение: −15% на лечение обоих зубов при записи до конца месяца.} Подобрать удобный день?'
+    reason: 'Начать лечение 2 кариесов, найденных на гигиене',
+    argument: 'Спецпредложение −15% на лечение обоих зубов при записи до конца месяца — один визит.',
+    status: { type: 'callback', detail: 'Просил перезвонить сегодня в 15:00', comment: 'Был на совещании, сам предложил время' }
   },
   {
     id: 7, name: 'Наталья Крылова', initials: 'НК', phone: '+7 915 872-46-01',
-    lastVisit: '11.03.2026', daysAgo: 131,
+    lastVisit: '11.03.2026', daysAgo: 131, planSum: '6 000 ₽', prio: 'mid',
     treat: 'Съёмный протез: <b>не пришла на коррекцию и осмотр</b>',
     treatFull: 'Протез установлен 11.03.2026. Плановая коррекция через 2 недели и контрольный осмотр через 3 месяца не состоялись.',
     insight: 'care',
@@ -120,25 +162,138 @@ const PATIENTS = [
       ['20.02.2026', 'Примерка, подгонка', 'просила «только к Орловой»'],
       ['28.12.2025', 'Снятие слепков', 'оплата картой']
     ],
-    message: 'Наталья Петровна, здравствуйте! Это «Дента+», от доктора Орловой. Доктор интересуется, как вы привыкли к протезу — обычно через пару месяцев нужна небольшая коррекция, чтобы ничего не натирало. {Осмотр и подгонка для вас бесплатны — это часть вашего лечения.} Когда вам было бы удобно заглянуть?'
+    reason: 'Пригласить на бесплатную коррекцию протеза',
+    argument: 'Звонок от имени доктора Орловой: осмотр и подгонка бесплатны — это часть её лечения.',
+    status: null
+  },
+  {
+    id: 8, name: 'Лидия Фомина', initials: 'ЛФ', phone: '+7 906 552-89-33',
+    lastVisit: '02.03.2026', daysAgo: 140, planSum: '22 000 ₽', prio: 'mid',
+    treat: 'Лечение кариеса начато, <b>1 визит из 3 — дальше не пришла</b>',
+    treatFull: 'План на 3 зуба, пролечен один (02.03.2026). Дальнейшие записи отменены без переноса.',
+    insight: 'care',
+    visits: [
+      ['02.03.2026', 'Лечение кариеса 1.4', 'оплата картой'],
+      ['14.02.2026', 'Диагностика, план на 3 зуба', 'оплата картой']
+    ],
+    reason: 'Продолжить план лечения — 2 зуба из 3',
+    argument: 'Мягко узнать причину паузы, предложить продолжить у того же врача.',
+    status: { type: 'refused', detail: 'Лечится в другой клинике · исключена из обзвона до 01.2027', comment: 'Переехала в другой район, вернуться не готова' }
+  },
+  {
+    id: 9, name: 'Пётр Соколов', initials: 'ПС', phone: '+7 925 410-77-19',
+    lastVisit: '28.05.2026', daysAgo: 53, planSum: '120 000 ₽', prio: 'high',
+    treat: 'Консультация по имплантации пройдена, <b>план не начат</b>',
+    treatFull: 'Консультация 28.05.2026, составлен план имплантации на 120 000 ₽. Пациент взял паузу после озвучивания стоимости.',
+    insight: 'credit',
+    visits: [
+      ['28.05.2026', 'Консультация по имплантации', 'план 120 000 ₽ — взял паузу'],
+      ['10.03.2026', 'Лечение кариеса 4.4', 'оплата в рассрочку 4 мес.']
+    ],
+    reason: 'Запустить план имплантации через рассрочку',
+    argument: 'Имплантацию можно разбить на этапы и оформить рассрочку 0% — первый этап от 9 800 ₽ в месяц.',
+    status: { type: 'booked', detail: 'Записан на 23.07, 18:00 · 1-й этап', comment: 'Выбрал рассрочку на 12 месяцев' }
   }
 ];
 
 /* ---------- Утилиты ---------- */
 const $ = (sel) => document.querySelector(sel);
+const byId = (id) => PATIENTS.find(p => p.id === id);
+const nb = (s) => s.replace(/ /g, '\u00A0');
+
+const PRIO_LABEL = { high: 'Высокий', mid: 'Средний' };
 
 function fmtToday() {
-  const d = new Date();
-  return d.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date().toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-/* подсветка персонализированной части: {…} -> <mark>…</mark> */
-function renderMsg(raw) {
-  return raw.replace('{', '<mark>').replace('}', '</mark>');
+function statusChip(st) {
+  const s = STATUSES[st.type];
+  return `<span class="status-chip ${s.cls}">${s.icon} ${s.label}<br><small>${st.detail}</small></span>`;
 }
 
-/* ---------- Инициализация ---------- */
-$('#todayLabel').textContent = fmtToday();
+function actionCell(p) {
+  return p.status
+    ? statusChip(p.status)
+    : `<button class="p-action" data-id="${p.id}"><img src="assets/icons/phone.png" alt="">Сценарий звонка</button>`;
+}
+
+/* ---------- Переключение экранов ---------- */
+document.querySelectorAll('.side-link[data-screen]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    $('#screen-' + link.dataset.screen).classList.remove('hidden');
+    window.scrollTo(0, 0);
+  });
+});
+
+/* ---------- Экран «Мой день» ---------- */
+function renderTasks() {
+  const pending = PATIENTS.filter(p => !p.status);
+  const callback = PATIENTS.filter(p => p.status && p.status.type === 'callback');
+  const done = PATIENTS.filter(p => p.status && p.status.type !== 'callback');
+
+  $('#navTaskCount').textContent = pending.length + callback.length;
+
+  $('#taskListPending').innerHTML = pending
+    .sort((a, b) => (a.prio === 'high' ? -1 : 1) - (b.prio === 'high' ? -1 : 1))
+    .map(p => taskRow(p, `<span class="prio prio-${p.prio}">${PRIO_LABEL[p.prio]}<br>${nb(p.planSum)}</span>`)).join('');
+
+  $('#taskListCallback').innerHTML = callback
+    .map(p => taskRow(p, `<span class="prio prio-time">15:00</span>`)).join('');
+
+  $('#taskListDone').innerHTML = done
+    .map(p => taskRow(p, `<span class="prio prio-${p.prio}">${PRIO_LABEL[p.prio]}<br>${nb(p.planSum)}</span>`, true)).join('');
+
+  document.querySelectorAll('.task-list .p-action').forEach(btn =>
+    btn.addEventListener('click', () => openDrawer(byId(+btn.dataset.id))));
+}
+
+function taskRow(p, firstCell, isDone = false) {
+  const ins = INSIGHTS[p.insight];
+  return `
+    <div class="task-row ${isDone ? 'task-done-row' : ''}">
+      ${firstCell}
+      <div class="task-person">
+        <div class="p-avatar">${p.initials}</div>
+        <div>
+          <div class="p-name">${p.name}</div>
+          <div class="p-meta">${p.phone}</div>
+        </div>
+      </div>
+      <div class="task-reason">${p.reason}</div>
+      <div><span class="insight-chip ${ins.chip}">${ins.icon} ${ins.label}</span></div>
+      <div>${actionCell(p)}</div>
+    </div>`;
+}
+
+/* ---------- Экран «Анализ картотеки» ---------- */
+function renderPatients() {
+  const list = $('#patientList');
+  list.innerHTML = '';
+  PATIENTS.forEach((p, i) => {
+    const ins = INSIGHTS[p.insight];
+    const row = document.createElement('div');
+    row.className = 'patient-row';
+    row.style.animationDelay = (i * 0.08) + 's';
+    row.innerHTML = `
+      <div class="p-avatar">${p.initials}</div>
+      <div>
+        <div class="p-name">${p.name}</div>
+        <div class="p-meta">был(а) ${p.lastVisit} · ${p.daysAgo} дн. назад · план ${nb(p.planSum)}</div>
+      </div>
+      <div class="p-treat">${p.treat}</div>
+      <div><span class="insight-chip ${ins.chip}">${ins.icon} ${ins.label}</span></div>
+      <div class="p-cell-action">${actionCell(p)}</div>
+    `;
+    const btn = row.querySelector('.p-action');
+    if (btn) btn.addEventListener('click', () => openDrawer(p));
+    list.appendChild(row);
+  });
+}
 
 document.querySelectorAll('.preset').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -153,22 +308,23 @@ document.querySelectorAll('.preset').forEach(btn => {
   });
 });
 
-/* ---------- Шаг 2: анализ ---------- */
 const LOG_LINES = [
-  'Загружена картотека: 248 пациентов за выбранный период',
+  'Данные из МИС получены по API: 248 пациентов за период',
   'Сверены планы лечения и фактические визиты',
+  'Исключены пациенты, обработанные ранее: 4',
   'Найдено незаконченное лечение: 31 пациент',
-  'Проанализированы история визитов, оплаты и отклики на рассылки',
-  'Готовы персональные сообщения для каждого пациента'
+  'Проанализированы визиты, оплаты и отклики — готовы инсайты и сценарии звонков'
 ];
 
 $('#btnAnalyze').addEventListener('click', () => {
   $('#periodPanel').classList.add('hidden');
+  $('#resultsPanel').classList.add('hidden');
   $('#analyzePanel').classList.remove('hidden');
 
   const fill = $('#progressFill');
   const log = $('#analyzeLog');
   log.innerHTML = '';
+  fill.style.width = '0%';
 
   LOG_LINES.forEach((line, i) => {
     setTimeout(() => {
@@ -179,83 +335,89 @@ $('#btnAnalyze').addEventListener('click', () => {
     }, 650 * i + 400);
   });
 
-  setTimeout(showResults, 650 * LOG_LINES.length + 1100);
+  setTimeout(() => {
+    $('#analyzePanel').classList.add('hidden');
+    $('#periodPanel').classList.remove('hidden');
+    $('#resultsPanel').classList.remove('hidden');
+    renderPatients();
+  }, 650 * LOG_LINES.length + 1100);
 });
-
-function showResults() {
-  $('#analyzePanel').classList.add('hidden');
-  $('#resultsPanel').classList.remove('hidden');
-  renderPatients();
-}
-
-/* ---------- Список пациентов ---------- */
-function renderPatients() {
-  const list = $('#patientList');
-  list.innerHTML = '';
-  PATIENTS.forEach((p, i) => {
-    const ins = INSIGHTS[p.insight];
-    const row = document.createElement('div');
-    row.className = 'patient-row';
-    row.style.animationDelay = (i * 0.09) + 's';
-    row.innerHTML = `
-      <div class="p-avatar">${p.initials}</div>
-      <div>
-        <div class="p-name">${p.name}</div>
-        <div class="p-meta">был(а) ${p.lastVisit} · ${p.daysAgo} дн. назад</div>
-      </div>
-      <div class="p-treat">${p.treat}</div>
-      <div><span class="insight-chip ${ins.chip}">${ins.icon} ${ins.label}</span></div>
-      <button class="p-action" data-id="${p.id}">Сообщение</button>
-    `;
-    row.querySelector('.p-action').addEventListener('click', () => openDrawer(p));
-    list.appendChild(row);
-  });
-}
 
 /* ---------- Карточка пациента ---------- */
 let typingTimer = null;
+let currentPatient = null;
+let selectedOutcome = null;
 
 function openDrawer(p) {
+  currentPatient = p;
+  selectedOutcome = null;
   const ins = INSIGHTS[p.insight];
+
   $('#dAvatar').textContent = p.initials;
   $('#dName').textContent = p.name;
   $('#dPhone').textContent = p.phone + ' · последний визит ' + p.lastVisit;
-  $('#dTreat').innerHTML = p.treatFull.replace(/(не |нет|отложил|прерван|остановлен)/i, '$1');
+  $('#dTreat').textContent = p.treatFull;
   $('#dVisits').innerHTML = p.visits.map(v =>
     `<li><span>${v[0]}</span> — ${v[1]} <em>· ${v[2]}</em></li>`).join('');
   $('#dInsight').innerHTML = `
     <span class="insight-chip ${ins.chip}">${ins.icon} ${ins.label}</span>
     <p>${ins.detail}</p>
     <p><b>Рекомендация ИИ:</b> ${ins.reco}</p>`;
+
+  renderScript(p, ins);
+
+  document.querySelectorAll('.outcome-btn').forEach(b => b.classList.remove('selected'));
+  $('#outcomeComment').value = '';
   $('#sentNote').classList.add('hidden');
-  $('#btnSend').disabled = false;
+  $('#btnSaveOutcome').disabled = false;
 
   $('#drawerBackdrop').classList.remove('hidden');
   $('#drawer').classList.remove('hidden');
-
-  typeMessage(renderMsg(p.message));
-  $('#btnSend').dataset.id = p.id;
+  $('#drawer').scrollTop = 0;
 }
 
-/* эффект «ИИ печатает сообщение» */
-function typeMessage(html) {
-  const box = $('#dMessage');
-  clearInterval(typingTimer);
-  box.innerHTML = '';
-  box.classList.add('typing-caret');
+function renderScript(p, ins) {
+  const objections = ins.objections.map(o =>
+    `<div class="script-obj"><b>${o[0]}</b> — ${o[1]}</div>`).join('');
+  $('#dScript').innerHTML = `
+    <div class="script-step">
+      <div class="script-step-label">Приветствие</div>
+      «${p.name.split(' ')[0]}, здравствуйте! Это Елена, стоматология “Дента+”. Удобно говорить пару минут?»
+    </div>
+    <div class="script-step">
+      <div class="script-step-label">Повод звонка</div>
+      ${p.reason}. Объяснить, почему важно не откладывать (медицинский аргумент из плана лечения).
+    </div>
+    <div class="script-step key">
+      <div class="script-step-label">Ключевой аргумент — под инсайт пациента</div>
+      <span id="scriptKey"></span>
+    </div>
+    <div class="script-step">
+      <div class="script-step-label">Если возражает</div>
+      ${objections}
+    </div>
+    <div class="script-step">
+      <div class="script-step-label">Цель звонка</div>
+      Предложить два конкретных окна на этой неделе и записать. Подтвердить SMS-напоминанием.
+    </div>`;
+  typeText($('#scriptKey'), p.argument);
+}
 
-  /* печатаем по словам, чтобы не ломать теги <mark> */
-  const tokens = html.split(/(<mark>|<\/mark>| )/).filter(t => t !== '');
-  let i = 0, acc = '';
+/* эффект «ИИ печатает» для ключевого аргумента */
+function typeText(el, text) {
+  clearInterval(typingTimer);
+  el.textContent = '';
+  el.classList.add('typing-caret');
+  const words = text.split(' ');
+  let i = 0;
   typingTimer = setInterval(() => {
-    acc += tokens[i];
-    box.innerHTML = acc;
+    el.textContent += (i ? ' ' : '') + words[i];
     i++;
-    if (i >= tokens.length) {
+    if (i >= words.length) {
       clearInterval(typingTimer);
-      box.classList.remove('typing-caret');
+      el.classList.remove('typing-caret');
     }
-  }, 38);
+  }, 90);
 }
 
 function closeDrawer() {
@@ -267,20 +429,79 @@ function closeDrawer() {
 $('#drawerClose').addEventListener('click', closeDrawer);
 $('#drawerBackdrop').addEventListener('click', closeDrawer);
 
-$('#btnSend').addEventListener('click', () => {
+/* ---------- Итог звонка ---------- */
+document.querySelectorAll('.outcome-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.outcome-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedOutcome = btn.dataset.oc;
+  });
+});
+
+const OUTCOME_DETAILS = {
+  booked: 'Записан(а) · дата уточнена по телефону',
+  callback: 'Просил(а) перезвонить в другое время',
+  noanswer: 'Попытка 1 из 3 · автоповтор через 2 дня',
+  refused: 'Исключён(а) из обзвона на 6 месяцев',
+  wrong: 'Номер помечен для обновления в МИС'
+};
+
+$('#btnSaveOutcome').addEventListener('click', () => {
+  if (!selectedOutcome || !currentPatient) return;
+  currentPatient.status = {
+    type: selectedOutcome,
+    detail: OUTCOME_DETAILS[selectedOutcome],
+    comment: $('#outcomeComment').value
+  };
   $('#sentNote').classList.remove('hidden');
-  $('#btnSend').disabled = true;
-  const id = $('#btnSend').dataset.id;
-  const btn = document.querySelector(`.p-action[data-id="${id}"]`);
-  if (btn) { btn.textContent = '✓ Отправлено'; btn.classList.add('sent'); }
+  $('#btnSaveOutcome').disabled = true;
+
+  if (selectedOutcome === 'booked') {
+    $('#statBooked').textContent = +$('#statBooked').textContent + 1;
+  }
+  $('#statCalled').textContent = +$('#statCalled').textContent + 1;
+
+  renderTasks();
+  renderPatients();
 });
 
-$('#btnCopy').addEventListener('click', () => {
-  navigator.clipboard && navigator.clipboard.writeText($('#dMessage').innerText);
-  $('#btnCopy').textContent = '✓ Скопировано';
-  setTimeout(() => { $('#btnCopy').textContent = 'Копировать'; }, 1600);
+/* ---------- Дашборд руководителя: графики ---------- */
+function renderCharts() {
+  const rev = [['Фев', 180], ['Мар', 320], ['Апр', 540], ['Май', 760], ['Июн', 980], ['Июл', 1240]];
+  const max = 1300;
+  $('#revChart').innerHTML = rev.map(([m, v], i) => `
+    <div class="bar-col" title="${m}: ${v} тыс ₽">
+      ${i === rev.length - 1 ? `<div class="bar-val">${v}</div>` : ''}
+      <div class="bar ${i === rev.length - 1 ? 'bar-current' : ''}" style="height:${Math.round(v / max * 100)}%"></div>
+      <div class="bar-month">${m}</div>
+    </div>`).join('');
+
+  const refuse = [
+    ['Дорого', 38], ['Лечится в другом месте', 27], ['Переезд', 18], ['Нет времени', 11], ['Прочее', 6]
+  ];
+  $('#refuseChart').innerHTML = refuse.map(([label, v]) => `
+    <div class="hbar-row">
+      <div>${label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${v / 40 * 100}%"></div></div>
+      <div class="hbar-val">${v}%</div>
+    </div>`).join('');
+}
+
+/* ---------- Интеграция: кнопка синхронизации ---------- */
+$('#btnSync').addEventListener('click', () => {
+  const btn = $('#btnSync');
+  btn.disabled = true;
+  btn.innerHTML = '<img src="assets/icons/bolt.png" alt="">Синхронизация…';
+  setTimeout(() => {
+    btn.innerHTML = '<img src="assets/icons/check.png" alt="">Готово · 41 обновление';
+    const row = document.createElement('tr');
+    row.innerHTML = '<td>20.07.2026 (сейчас)</td><td><span class="ok-chip">успешно</span></td><td>41 обновление</td><td>2 новые задачи</td>';
+    $('#syncLog').prepend(row);
+  }, 1800);
 });
 
-$('#btnCall').addEventListener('click', () => {
-  alert('Сценарий звонка сформирован — откроется в отдельном окне (демо).');
-});
+/* ---------- Инициализация ---------- */
+$('#todayLabel').textContent = fmtToday();
+renderTasks();
+renderPatients();
+renderCharts();
