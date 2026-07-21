@@ -53,14 +53,25 @@
         <span>Каналы</span>
       </a>
 
+      <div class="side-divider">Анализ звонков</div>
+      <a href="#" class="side-link" data-screen="calls">
+        <img src="assets/icons/headset.png" alt="">
+        <span>Доска звонков</span>
+      </a>
+      <a href="#" class="side-link" data-screen="mistakes">
+        <img src="assets/icons/doc.png" alt="">
+        <span>Работа над ошибками</span>
+        <b class="side-count side-count-orange" id="navMistCount">34</b>
+      </a>
+      <a href="#" class="side-link" data-screen="telephony">
+        <img src="assets/icons/phone.png" alt="">
+        <span>Телефония</span>
+      </a>
+
       <div class="side-divider">Общее</div>
       <a href="#" class="side-link" data-screen="integration">
         <img src="assets/icons/globe.png" alt="">
         <span>Интеграция с МИС</span>
-      </a>
-      <a href="#" class="side-link side-link-dim">
-        <img src="assets/icons/headset.png" alt="">
-        <span>Анализ звонков</span>
       </a>
     </nav>
 
@@ -456,6 +467,153 @@
       </div>
     </section>
 
+    <!-- ======== ЭКРАН 7. Доска звонков ======== -->
+    <section class="screen hidden" id="screen-calls">
+      <header class="topbar">
+        <div>
+          <h1>Анализ звонков</h1>
+          <p class="topbar-sub">ИИ слушает записи из телефонии, оценивает работу администратора и показывает, где потеряли пациента</p>
+        </div>
+        <div class="topbar-right">
+          <div class="sync-chip"><span class="sync-dot"></span>Телефония подключена · Mango Office</div>
+        </div>
+      </header>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num">86</div><div class="stat-label">звонков за период</div></div>
+        <div class="stat-card stat-blue"><div class="stat-num">72</div><div class="stat-label">средний балл работы</div></div>
+        <div class="stat-card stat-green"><div class="stat-num">48%</div><div class="stat-label">конверсия в запись</div></div>
+        <div class="stat-card stat-red"><div class="stat-num">39%</div><div class="stat-label">звонков с ошибками</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Средний балл по администраторам</h2></div>
+          <div class="bar-chart" id="callAdminChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Топ ошибок</h2></div>
+          <div class="hbar-chart" id="callErrChart"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head panel-head-split">
+          <h2>Звонки</h2>
+          <div class="list-tabs">
+            <button class="ctab active" data-f="all">Все</button>
+            <button class="ctab" data-f="bad">С ошибками</button>
+            <button class="ctab" data-f="good">Хорошие</button>
+          </div>
+        </div>
+        <div class="call-list" id="callList"></div>
+      </div>
+    </section>
+
+    <!-- ======== ЭКРАН 8. Работа над ошибками ======== -->
+    <section class="screen hidden" id="screen-mistakes">
+      <header class="topbar">
+        <div>
+          <h1>Работа над ошибками</h1>
+          <p class="topbar-sub">Сводка типовых ошибок по всем звонкам — готовый материал для планёрки и обучения администраторов</p>
+        </div>
+        <div class="topbar-right">
+          <button class="btn-primary" id="btnMeeting"><img src="assets/icons/doc.png" alt="">Материал для собрания</button>
+        </div>
+      </header>
+
+      <div class="stats-row">
+        <div class="stat-card stat-red"><div class="stat-num">34</div><div class="stat-label">звонка требуют разбора</div></div>
+        <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">типов повторяющихся ошибок</div></div>
+        <div class="stat-card"><div class="stat-num">«Сразу цена»</div><div class="stat-label">самая частая ошибка</div></div>
+        <div class="stat-card stat-green"><div class="stat-num">+11 баллов</div><div class="stat-label">потенциал после разбора</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Топ ошибок за период</h2></div>
+          <div class="hbar-chart" id="mistErrChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>По администраторам</h2></div>
+          <table class="admin-table">
+            <thead><tr><th>Администратор</th><th>Звонков</th><th>Балл</th><th>Главная ошибка</th></tr></thead>
+            <tbody>
+              <tr><td><span class="mini-avatar">ЕК</span>Елена Ковалёва</td><td>44</td><td><span class="score-badge score-good">81</span></td><td>Иногда не отрабатывает «дорого»</td></tr>
+              <tr><td><span class="mini-avatar mini-avatar2">ИС</span>Ирина Соловьёва</td><td>42</td><td><span class="score-badge score-mid">64</span></td><td>Сразу цена без выявления потребности</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Разбор типовых ошибок</h2></div>
+        <div id="mistCards"></div>
+      </div>
+
+      <div class="meeting-box">
+        <div class="meeting-title">📋 Повестка планёрки — предлагает ИИ</div>
+        <ol class="meeting-list">
+          <li>Стандарт приветствия: «Стоматология “Дента+”, администратор [имя], здравствуйте!» — отработать на 5 звонках.</li>
+          <li>Правило «сначала потребность, потом цена»: 2–3 вопроса перед озвучиванием стоимости.</li>
+          <li>Работа с «дорого»: ценность → рассрочка 0% → приглашение на бесплатный осмотр.</li>
+          <li>Обязательное закрытие: предложить два конкретных окна и записать.</li>
+          <li>Разбор эталонного звонка Елены (92 балла) — как ориентир.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ======== ЭКРАН 9. Телефония ======== -->
+    <section class="screen hidden" id="screen-telephony">
+      <header class="topbar">
+        <div>
+          <h1>Телефония</h1>
+          <p class="topbar-sub">Записи звонков поступают из АТС автоматически и сразу уходят на анализ — ничего не нужно загружать вручную</p>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="integration-head">
+          <div class="int-sys">
+            <div class="int-logo">АТС</div>
+            <div>
+              <div class="int-name">Mango Office · подключено по API</div>
+              <div class="int-sub">получение записей входящих и исходящих звонков</div>
+            </div>
+          </div>
+          <div class="int-status"><span class="sync-dot"></span>Подключено</div>
+          <button class="btn-primary" id="btnSyncTel"><img src="assets/icons/bolt.png" alt="">Синхронизировать сейчас</button>
+        </div>
+
+        <div class="int-grid">
+          <div class="int-cell"><div class="int-num">2</div><div class="int-label">номера</div></div>
+          <div class="int-cell"><div class="int-num">3 480</div><div class="int-label">звонков / мес</div></div>
+          <div class="int-cell"><div class="int-num">86</div><div class="int-label">проанализировано сегодня</div></div>
+          <div class="int-cell"><div class="int-num">100%</div><div class="int-label">запись разговоров</div></div>
+          <div class="int-cell"><div class="int-num">72</div><div class="int-label">средний балл</div></div>
+        </div>
+
+        <div class="int-settings">
+          <div class="int-setting"><b>Анализировать:</b> входящие и исходящие звонки</div>
+          <div class="int-setting"><b>Минимальная длительность для разбора:</b> 30 секунд</div>
+          <div class="int-setting"><b>Авто-анализ новых записей:</b> <span class="toggle on">вкл</span></div>
+          <div class="int-setting"><b>Хранение записей:</b> сервер клиники, доступ по ролям</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Журнал загрузки записей</h2></div>
+        <table class="admin-table log-table">
+          <thead><tr><th>Дата</th><th>Результат</th><th>Записей</th><th>Проанализировано</th></tr></thead>
+          <tbody id="telLog">
+            <tr><td>20.07.2026 15:40</td><td><span class="ok-chip">успешно</span></td><td>86 записей</td><td>86 разборов</td></tr>
+            <tr><td>19.07.2026 15:40</td><td><span class="ok-chip">успешно</span></td><td>73 записи</td><td>73 разбора</td></tr>
+            <tr><td>18.07.2026 15:40</td><td><span class="ok-chip">успешно</span></td><td>91 запись</td><td>91 разбор</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 
   <!-- ============ Карточка пациента (на весь экран) ============ -->
@@ -542,6 +700,64 @@
       и подберёт следующий шаг.
     </div>
   </aside>
+
+  <!-- ============ Разбор звонка (на весь экран) ============ -->
+  <div class="pmodal hidden" id="callmodal">
+    <button class="drawer-close" id="callClose">✕</button>
+    <div class="pmodal-inner">
+
+      <header class="pmodal-head">
+        <div class="p-avatar big" id="callAvatar">?</div>
+        <div class="pmodal-title">
+          <h2 id="callTitle">—</h2>
+          <div class="drawer-phone" id="callMeta">—</div>
+        </div>
+        <div class="call-score-wrap">
+          <div class="call-score-big" id="callScoreBig">0</div>
+          <div class="call-score-cap">балл работы</div>
+        </div>
+      </header>
+
+      <!-- плеер + метрики -->
+      <div class="panel call-player-panel">
+        <div class="player">
+          <button class="player-play">▶</button>
+          <div class="waveform" id="callWave"></div>
+          <div class="player-time" id="callDur">0:00</div>
+        </div>
+        <div class="call-metrics" id="callMetrics"></div>
+      </div>
+
+      <div class="pmodal-grid">
+        <div class="pmodal-col">
+          <div class="drawer-section">
+            <h3><img src="assets/icons/chat.png" alt="" class="ico-mini">Транскрипт с разметкой ИИ</h3>
+            <div class="transcript" id="callTranscript"></div>
+          </div>
+        </div>
+
+        <div class="pmodal-col">
+          <div class="drawer-section">
+            <h3><img src="assets/icons/check.png" alt="" class="ico-mini">Оценка по критериям</h3>
+            <div class="criteria" id="callCriteria"></div>
+          </div>
+          <div class="drawer-section">
+            <h3><img src="assets/icons/chart.png" alt="" class="ico-mini">Движение по воронке</h3>
+            <div class="funnel-steps" id="callFunnel"></div>
+          </div>
+          <div class="drawer-section">
+            <h3><img src="assets/icons/heart.png" alt="" class="ico-mini">Настроение клиента</h3>
+            <div class="sentiment-track" id="callSent"></div>
+          </div>
+          <div class="drawer-section">
+            <h3><img src="assets/icons/bolt.png" alt="" class="ico-mini">Ошибки и как исправить</h3>
+            <div id="callMistakes"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
 <script src="js/app.js?v=2"></script>
 </body>

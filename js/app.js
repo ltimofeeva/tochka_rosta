@@ -849,9 +849,385 @@ document.querySelectorAll('.itab').forEach(tab =>
     renderDialogList();
   }));
 
+/* ============ Анализ звонков ============ */
+const SENT = {
+  pos: { cls: 'sent-pos', label: '😊 Позитивное' },
+  neu: { cls: 'sent-neu', label: '😐 Нейтральное' },
+  neg: { cls: 'sent-neg', label: '😟 Негативное' }
+};
+const CALL_TAGS = {
+  'no-greeting': { cls: 'tag-bad',  label: '⚠️ Нет приветствия' },
+  'price-first': { cls: 'tag-bad',  label: 'Сразу цена' },
+  'no-needs':    { cls: 'tag-warn', label: 'Не выявил потребность' },
+  'no-close':    { cls: 'tag-bad',  label: 'Не закрыл на запись' },
+  'interrupt':   { cls: 'tag-warn', label: 'Перебивал клиента' },
+  'parasites':   { cls: 'tag-warn', label: 'Слова-паразиты' },
+  'good':        { cls: 'tag-good', label: '✅ Эталонный звонок' }
+};
+const scoreCls = (s) => s >= 75 ? 'score-good' : s >= 55 ? 'score-mid' : 'score-bad';
+
+/* псевдо-осциллограмма (детерминированная) */
+const WAVE = [8,14,22,30,18,26,40,34,20,12,28,44,50,38,24,16,30,46,52,40,26,18,10,22,34,48,42,30,20,14,26,38,44,32,22,12,20,34,28,18,10,16,24,36,30,20,12,8];
+
+const CALLS = [
+  {
+    id: 'c1', date: '20.07 · 14:23', admin: 'Ирина Соловьёва', adminInit: 'ИС',
+    clientName: 'Новый пациент', clientSub: '+7 977 530-37-02', patientId: null,
+    type: 'Входящий', duration: '3:12', sentiment: 'neg', score: 41, booked: false,
+    tags: ['no-greeting', 'price-first', 'no-close'],
+    sentFrom: 'neu', sentTo: 'neg',
+    metrics: [
+      ['Приветствие', 'нет', 'bad'], ['Слова-паразиты', '7', 'bad'],
+      ['Перебивания', '1', 'bad'], ['Монолог админа', '38%', 'ok'], ['Обращение по имени', 'нет', 'bad']
+    ],
+    transcript: [
+      { who: 'client', text: 'Здравствуйте, сколько у вас стоит поставить коронку?' },
+      { who: 'admin', text: 'PARA[Ну] коронка… PARA[это], PARA[короче], от 18 тысяч, зависит от материала.', flag: '✗ Нет приветствия и представления, сразу цена без вопросов' },
+      { who: 'client', text: 'А почему так дорого?' },
+      { who: 'admin', text: 'PARA[Ну] PARA[как бы] это средняя цена, у всех так.', flag: '✗ Возражение «дорого» не отработано' },
+      { who: 'client', text: 'Понятно, я подумаю. До свидания.' },
+      { who: 'admin', text: 'Ага, до свидания.', flag: '✗ Не предложил осмотр и не закрыл на запись' }
+    ],
+    criteria: [
+      ['Приветствие и представление', 'no', 'Не поздоровался по стандарту, не назвал клинику и имя'],
+      ['Обращение к клиенту по имени', 'no', 'Имя не уточнено и не использовано'],
+      ['Выявление потребности', 'no', 'Ни одного вопроса о ситуации клиента'],
+      ['Презентация ценности', 'no', 'Озвучена только цена, без пользы'],
+      ['Работа с возражениями', 'no', '«Дорого» — ответил шаблонно, без аргументов'],
+      ['Закрытие на запись', 'no', 'Не предложил время, отпустил клиента'],
+      ['Прощание и следующий шаг', 'part', 'Попрощался, но без договорённости']
+    ],
+    funnel: ['skip', 'skip', 'part', 'skip', 'skip'],
+    mistakes: [
+      ['Не поздоровался по стандарту и не представился', 'Начинать: «Стоматология “Дента+”, администратор Ирина, здравствуйте!»'],
+      ['Сразу назвал цену без выявления потребности', 'Сначала 2–3 вопроса: какой зуб, был ли осмотр, что беспокоит — потом предложение.'],
+      ['7 слов-паразитов («ну», «короче», «как бы»)', 'Заменять паузой; проговорить скрипт вслух 5 раз для автоматизма.'],
+      ['Не отработал возражение «дорого»', 'Показать ценность → рассрочка 0% → пригласить на бесплатный осмотр.'],
+      ['Не закрыл на запись', 'Предложить конкретное время: «Запишу вас на осмотр — вам удобнее завтра в 10:00 или в 18:00?»']
+    ]
+  },
+  {
+    id: 'c2', date: '20.07 · 12:37', admin: 'Елена Ковалёва', adminInit: 'ЕК',
+    clientName: 'Мария Ковальчук', clientSub: '+7 903 777-51-12', patientId: 3,
+    type: 'Входящий', duration: '2:48', sentiment: 'pos', score: 92, booked: true,
+    tags: ['good'],
+    sentFrom: 'neu', sentTo: 'pos',
+    metrics: [
+      ['Приветствие', 'по стандарту', 'ok'], ['Слова-паразиты', '0', 'ok'],
+      ['Перебивания', '0', 'ok'], ['Монолог админа', '46%', 'ok'], ['Обращение по имени', '2 раза', 'ok']
+    ],
+    transcript: [
+      { who: 'admin', text: 'Стоматология «Дента+», администратор Елена, здравствуйте!', flag: '✓ Приветствие по стандарту', good: true },
+      { who: 'client', text: 'Здравствуйте, хочу узнать про имплантацию.' },
+      { who: 'admin', text: 'Подскажите, вас беспокоит один зуб или планируете несколько?', flag: '✓ Выявление потребности', good: true },
+      { who: 'client', text: 'Один, нижний, недавно удалили.' },
+      { who: 'admin', text: 'Поняла вас, Мария. После удаления важно не тянуть. Приглашаю на бесплатную консультацию с 3D-снимком — четверг или суббота?', flag: '✓ Ценность + имя + закрытие', good: true },
+      { who: 'client', text: 'Давайте четверг.' },
+      { who: 'admin', text: 'Записала на четверг 15:00 к доктору Гусеву, пришлю напоминание. Хорошего дня!' }
+    ],
+    criteria: [
+      ['Приветствие и представление', 'ok', 'Клиника + имя + «здравствуйте»'],
+      ['Обращение к клиенту по имени', 'ok', 'Назвала по имени дважды'],
+      ['Выявление потребности', 'ok', 'Уточнила ситуацию до предложения'],
+      ['Презентация ценности', 'ok', 'Через пользу, а не цену'],
+      ['Работа с возражениями', 'ok', 'Возражений не возникло — сняла заранее'],
+      ['Закрытие на запись', 'ok', 'Предложила выбор из двух окон, записала'],
+      ['Прощание и следующий шаг', 'ok', 'Напоминание + тёплое прощание']
+    ],
+    funnel: ['done', 'done', 'done', 'done', 'done'],
+    mistakes: []
+  },
+  {
+    id: 'c3', date: '20.07 · 11:05', admin: 'Ирина Соловьёва', adminInit: 'ИС',
+    clientName: 'Дмитрий Волков', clientSub: '+7 926 118-22-40', patientId: 2,
+    type: 'Входящий', duration: '1:54', sentiment: 'neu', score: 66, booked: true,
+    tags: ['interrupt'],
+    sentFrom: 'neu', sentTo: 'neu',
+    metrics: [
+      ['Приветствие', 'кратко', 'bad'], ['Слова-паразиты', '2', 'ok'],
+      ['Перебивания', '1', 'bad'], ['Монолог админа', '52%', 'ok'], ['Обращение по имени', 'нет', 'bad']
+    ],
+    transcript: [
+      { who: 'admin', text: 'Дента плюс, здравствуйте.', flag: '~ Не представилась по имени' },
+      { who: 'client', text: 'Здравствуйте, болит зуб, можно записаться?' },
+      { who: 'admin', text: 'Да, конечно, а когда вам удоб…' },
+      { who: 'client', text: '(перебивает) Сегодня можно?' },
+      { who: 'admin', text: 'Сегодня в 18:30, записываю?', flag: '~ Не уточнила характер боли' },
+      { who: 'client', text: 'Да.' },
+      { who: 'admin', text: 'Записала, до встречи.' }
+    ],
+    criteria: [
+      ['Приветствие и представление', 'part', 'Поздоровалась, но не назвала имя'],
+      ['Обращение к клиенту по имени', 'no', 'Имя не использовано'],
+      ['Выявление потребности', 'part', 'Не уточнила характер и срочность боли'],
+      ['Презентация ценности', 'ok', 'Быстро предложила неотложное окно'],
+      ['Работа с возражениями', 'ok', 'Возражений не было'],
+      ['Закрытие на запись', 'ok', 'Записала на конкретное время'],
+      ['Прощание и следующий шаг', 'ok', 'Попрощалась корректно']
+    ],
+    funnel: ['part', 'part', 'done', 'done', 'done'],
+    mistakes: [
+      ['Не представилась по имени', 'Добавить имя: «…администратор Ирина, здравствуйте!»'],
+      ['Не обратилась к клиенту по имени', 'Спросить и использовать имя — это повышает доверие.'],
+      ['Не уточнила характер боли', 'Один вопрос: «Давно болит, реакция на горячее/холодное?» — важно для приоритета записи.']
+    ]
+  },
+  {
+    id: 'c4', date: '20.07 · 10:18', admin: 'Елена Ковалёва', adminInit: 'ЕК',
+    clientName: 'Новый пациент', clientSub: '+7 995 210-44-70', patientId: null,
+    type: 'Входящий', duration: '1:36', sentiment: 'neg', score: 54, booked: false,
+    tags: ['price-first', 'no-close'],
+    sentFrom: 'neu', sentTo: 'neg',
+    metrics: [
+      ['Приветствие', 'по стандарту', 'ok'], ['Слова-паразиты', '1', 'ok'],
+      ['Перебивания', '0', 'ok'], ['Монолог админа', '35%', 'ok'], ['Обращение по имени', 'нет', 'bad']
+    ],
+    transcript: [
+      { who: 'admin', text: 'Дента плюс, Елена, здравствуйте!', flag: '✓ Приветствие по стандарту', good: true },
+      { who: 'client', text: 'Здравствуйте, вы брекеты детям ставите?' },
+      { who: 'admin', text: 'Да, ставим, от 12 лет.' },
+      { who: 'client', text: 'А сколько стоит?' },
+      { who: 'admin', text: 'Зависит от системы, от 80 тысяч.', flag: '✗ Цена без выявления ситуации и ценности' },
+      { who: 'client', text: 'Ясно, спасибо.' },
+      { who: 'admin', text: 'Пожалуйста, до свидания.', flag: '✗ Не предложила бесплатную консультацию ортодонта' }
+    ],
+    criteria: [
+      ['Приветствие и представление', 'ok', 'По стандарту'],
+      ['Обращение к клиенту по имени', 'no', 'Имя не уточнено'],
+      ['Выявление потребности', 'no', 'Не уточнила возраст ребёнка и ситуацию'],
+      ['Презентация ценности', 'no', 'Только цена, без пользы'],
+      ['Работа с возражениями', 'no', 'Не удержала после вопроса о цене'],
+      ['Закрытие на запись', 'no', 'Не предложила консультацию/осмотр']
+    ],
+    funnel: ['done', 'skip', 'skip', 'skip', 'skip'],
+    mistakes: [
+      ['Сразу назвала цену без выявления ситуации', 'Уточнить: возраст ребёнка, был ли осмотр ортодонта, что беспокоит.'],
+      ['Не предложила бесплатную консультацию', 'Ортодонт-консультация бесплатна — это лёгкий следующий шаг для записи.'],
+      ['Не закрыла на запись', 'Предложить конкретное время осмотра и записать.']
+    ]
+  },
+  {
+    id: 'c5', date: '20.07 · 09:41', admin: 'Ирина Соловьёва', adminInit: 'ИС',
+    clientName: 'Игорь Романов', clientSub: '+7 917 604-93-25', patientId: 4,
+    type: 'Входящий', duration: '2:10', sentiment: 'pos', score: 79, booked: true,
+    tags: ['good'],
+    sentFrom: 'neu', sentTo: 'pos',
+    metrics: [
+      ['Приветствие', 'по стандарту', 'ok'], ['Слова-паразиты', '1', 'ok'],
+      ['Перебивания', '0', 'ok'], ['Монолог админа', '44%', 'ok'], ['Обращение по имени', '1 раз', 'ok']
+    ],
+    transcript: [
+      { who: 'admin', text: 'Стоматология «Дента+», Ирина, здравствуйте!', flag: '✓ Приветствие по стандарту', good: true },
+      { who: 'client', text: 'Здравствуйте, хочу перенести запись.' },
+      { who: 'admin', text: 'Конечно, Игорь. У вас 24 июля, лечение. На когда перенести?' },
+      { who: 'client', text: 'На пятницу вечером.' },
+      { who: 'admin', text: 'Есть 19:30 и 20:00, какое удобно?' },
+      { who: 'client', text: '20:00.' },
+      { who: 'admin', text: 'Готово, перенесла на пятницу 20:00, напоминание пришлю. Хорошего дня!' }
+    ],
+    criteria: [
+      ['Приветствие и представление', 'ok', 'По стандарту'],
+      ['Обращение к клиенту по имени', 'ok', 'Назвала по имени'],
+      ['Выявление потребности', 'ok', 'Уточнила детали переноса'],
+      ['Презентация ценности', 'ok', 'Предложила конкретные окна'],
+      ['Работа с возражениями', 'ok', 'Возражений не было'],
+      ['Закрытие на запись', 'ok', 'Перенос оформлен'],
+      ['Прощание и следующий шаг', 'ok', 'Напоминание + прощание']
+    ],
+    funnel: ['done', 'done', 'done', 'done', 'done'],
+    mistakes: [
+      ['Не уточнила причину переноса', 'Один мягкий вопрос о причине помогает удержать пациента и вернуть, если он «остывает».']
+    ]
+  }
+];
+
+const byCallId = (id) => CALLS.find(c => c.id === id);
+let callFilter = 'all';
+
+const MISTAKE_CARDS = [
+  {
+    name: 'Сразу называют цену, без выявления потребности', count: '11 звонков',
+    example: '«Коронка? Ну, от 18 тысяч, зависит от материала.»',
+    why: 'Клиент сравнивает клиники только по цене и уходит «подумать» — ценность не показана.',
+    how: 'Сначала 2–3 вопроса (какой зуб, был ли осмотр, что беспокоит), затем предложение и только потом цена в связке с пользой.',
+    who: 'Чаще всего — Ирина Соловьёва'
+  },
+  {
+    name: 'Не закрывают звонок на запись', count: '9 звонков',
+    example: '«Ясно, спасибо. — Пожалуйста, до свидания.»',
+    why: 'Тёплый пациент, который сам позвонил, уходит без записи — деньги потеряны.',
+    how: 'Всегда предлагать выбор из двух конкретных окон: «Вам удобнее завтра в 10:00 или в 18:00?»',
+    who: 'Ирина Соловьёва, Елена Ковалёва'
+  },
+  {
+    name: 'Слова-паразиты снижают доверие', count: '18 звонков',
+    example: '«Ну, короче, это как бы средняя цена…»',
+    why: 'Речь звучит неуверенно и непрофессионально — пациент сомневается в клинике.',
+    how: 'Заменять «ну / короче / как бы» короткой паузой; проговорить скрипт вслух 5 раз для автоматизма.',
+    who: 'Обе — как речевая привычка'
+  }
+];
+
+function renderMistakeCards() {
+  $('#mistCards').innerHTML = MISTAKE_CARDS.map(m => `
+    <div class="mist-card">
+      <div class="mist-head">
+        <div class="mist-name">${m.name}</div>
+        <span class="mist-count">${m.count}</span>
+      </div>
+      <div class="mist-example">Пример из звонка: ${m.example}</div>
+      <div class="mist-row bad"><span class="mist-k">Почему плохо:</span><span>${m.why}</span></div>
+      <div class="mist-row good"><span class="mist-k">Как надо:</span><span>${m.how}</span></div>
+      <div class="mist-who">Кого касается: ${m.who}</div>
+    </div>`).join('');
+}
+
+function renderCalls() {
+  renderCallList();
+  renderCallCharts();
+  renderMistakeCards();
+}
+
+function renderCallList() {
+  const list = $('#callList');
+  const items = CALLS.filter(c =>
+    callFilter === 'all' ? true :
+    callFilter === 'bad' ? c.score < 70 :
+    callFilter === 'good' ? c.score >= 80 : true);
+
+  list.innerHTML = items.map(c => {
+    const s = SENT[c.sentiment];
+    const tags = c.tags.map(t => `<span class="call-tag ${CALL_TAGS[t].cls}">${CALL_TAGS[t].label}</span>`).join('');
+    return `
+      <div class="call-row">
+        <button class="call-play" data-id="${c.id}">▶</button>
+        <div class="call-admin">
+          <div class="p-avatar">${c.adminInit}</div>
+          <div><div class="call-who-name">${c.admin}</div><div class="call-who-sub">${c.date} · ${c.duration}</div></div>
+        </div>
+        <div><div class="call-who-name">${c.clientName}</div><div class="call-who-sub">${c.clientSub} · ${c.type}</div></div>
+        <div><span class="sent-chip ${s.cls}">${s.label}</span></div>
+        <div><span class="score-badge ${scoreCls(c.score)}">${c.score}</span></div>
+        <div class="call-tags">${tags}</div>
+        <button class="call-open" data-id="${c.id}">Разбор</button>
+      </div>`;
+  }).join('');
+
+  list.querySelectorAll('.call-open, .call-play').forEach(btn =>
+    btn.addEventListener('click', () => openCall(byCallId(btn.dataset.id))));
+}
+
+function renderCallCharts() {
+  const admins = [['Ирина', 64], ['Елена', 81]];
+  $('#callAdminChart').innerHTML = admins.map(([m, v]) => `
+    <div class="bar-col" title="${m}: ${v}">
+      <div class="bar-val">${v}</div>
+      <div class="bar ${v >= 75 ? 'bar-current' : ''}" style="height:${v}%"></div>
+      <div class="bar-month">${m}</div>
+    </div>`).join('');
+
+  const errs = [
+    ['Слова-паразиты', 18], ['Не выявляет потребность', 14],
+    ['Сразу цена', 11], ['Не закрывает на запись', 9],
+    ['Перебивает клиента', 8], ['Нет приветствия', 6]
+  ];
+  const maxE = 20;
+  const hbar = errs.map(([label, v]) => `
+    <div class="hbar-row">
+      <div>${label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${v / maxE * 100}%"></div></div>
+      <div class="hbar-val">${v}</div>
+    </div>`).join('');
+  $('#callErrChart').innerHTML = hbar;
+  if ($('#mistErrChart')) $('#mistErrChart').innerHTML = hbar;
+}
+
+/* разбор звонка (модалка на весь экран) */
+function openCall(c) {
+  $('#callAvatar').textContent = c.patientId ? byId(c.patientId).initials : '?';
+  $('#callAvatar').className = 'p-avatar big' + (c.patientId ? '' : ' unknown');
+  $('#callTitle').textContent = c.clientName;
+  $('#callMeta').textContent = `${c.clientSub} · ${c.type} · ${c.date} · ${c.duration} · администратор ${c.admin}`;
+  $('#callScoreBig').textContent = c.score;
+  $('#callScoreBig').className = 'call-score-big ' + (c.score >= 75 ? 'accent-green' : c.score >= 55 ? 'accent-orange' : 'accent-red');
+  $('#callScoreBig').style.color = c.score >= 75 ? 'var(--green)' : c.score >= 55 ? 'var(--orange)' : 'var(--red)';
+  $('#callDur').textContent = c.duration;
+
+  const cut = Math.round(WAVE.length * 0.35);
+  $('#callWave').innerHTML = WAVE.map((h, i) =>
+    `<span class="${i < cut ? 'played' : ''}" style="height:${h + 6}px"></span>`).join('');
+
+  $('#callMetrics').innerHTML = c.metrics.map(m =>
+    `<div class="metric"><span class="metric-val ${m[2]}">${m[1]}</span><span class="metric-label">${m[0]}</span></div>`).join('');
+
+  $('#callTranscript').innerHTML = c.transcript.map(t => {
+    const text = t.text.replace(/PARA\[(.*?)\]/g, '<span class="parasite">$1</span>');
+    const flag = t.flag ? `<span class="tr-flag ${t.good ? 'good' : ''}">${t.flag}</span>` : '';
+    return `<div class="tr-line tr-${t.who}">
+      <div class="tr-who">${t.who === 'admin' ? 'Админ' : 'Клиент'}</div>
+      <div class="tr-bubble">${text}${flag}</div></div>`;
+  }).join('');
+
+  const CM = { ok: ['crit-ok', '✓'], no: ['crit-no', '✕'], part: ['crit-part', '~'] };
+  $('#callCriteria').innerHTML = c.criteria.map(cr => {
+    const [cls, sym] = CM[cr[1]];
+    return `<div class="crit-row ${cls}">
+      <div class="crit-mark">${sym}</div>
+      <div class="crit-main"><div class="crit-name">${cr[0]}</div><div class="crit-note">${cr[2]}</div></div></div>`;
+  }).join('');
+
+  const FN = ['Контакт', 'Потребность', 'Презентация', 'Возражения', 'Закрытие'];
+  $('#callFunnel').innerHTML = c.funnel.map((st, i) =>
+    `<div class="fstep ${st}"><div class="fstep-bar"></div><div class="fstep-name">${FN[i]}</div></div>`).join('');
+
+  const sf = SENT[c.sentFrom], stt = SENT[c.sentTo];
+  const up = (c.sentTo === 'pos') || (c.sentFrom === 'neg' && c.sentTo === 'neu');
+  $('#callSent').innerHTML = `
+    <span class="sent-chip ${sf.cls}">${sf.label}</span>
+    <div class="sent-arrow ${up ? 'up' : ''}"></div>
+    <span class="sent-chip ${stt.cls}">${stt.label}</span>`;
+
+  $('#callMistakes').innerHTML = c.mistakes.length
+    ? c.mistakes.map(m => `<div class="fix-card">
+        <div class="fix-problem"><b>Ошибка:</b> ${m[0]}</div>
+        <div class="fix-how"><b>Как надо:</b> ${m[1]}</div></div>`).join('')
+    : '<div class="fix-empty">✅ Грубых ошибок нет. Звонок можно использовать как эталон для обучения.</div>';
+
+  $('#callmodal').classList.remove('hidden');
+  $('#callmodal').scrollTop = 0;
+}
+
+$('#callClose').addEventListener('click', () => $('#callmodal').classList.add('hidden'));
+
+document.querySelectorAll('.ctab').forEach(tab =>
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    callFilter = tab.dataset.f;
+    renderCallList();
+  }));
+
+$('#btnMeeting').addEventListener('click', () => {
+  const b = $('#btnMeeting');
+  b.innerHTML = '<img src="assets/icons/check.png" alt="">Отчёт сформирован (PDF)';
+});
+
+$('#btnSyncTel').addEventListener('click', () => {
+  const b = $('#btnSyncTel');
+  b.disabled = true;
+  b.innerHTML = '<img src="assets/icons/bolt.png" alt="">Загрузка записей…';
+  setTimeout(() => {
+    b.innerHTML = '<img src="assets/icons/check.png" alt="">Готово · 14 новых разборов';
+    const row = document.createElement('tr');
+    row.innerHTML = '<td>20.07.2026 (сейчас)</td><td><span class="ok-chip">успешно</span></td><td>14 записей</td><td>14 разборов</td>';
+    $('#telLog').prepend(row);
+  }, 1800);
+});
+
 /* ---------- Инициализация ---------- */
 $('#todayLabel').textContent = fmtToday();
 renderTasks();
 renderPatients();
 renderCharts();
 renderAssistant();
+renderCalls();
