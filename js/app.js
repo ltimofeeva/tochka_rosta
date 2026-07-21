@@ -567,8 +567,290 @@ $('#btnSync').addEventListener('click', () => {
   }, 1800);
 });
 
+/* ============ Умный помощник 24/7: инбокс диалогов ============ */
+const CHANNELS = {
+  tg:  { label: 'Telegram', cls: 'ch-tg' },
+  max: { label: 'MAX', cls: 'ch-max' },
+  web: { label: 'Сайт', cls: 'ch-web' }
+};
+const DSTATUS = {
+  'bot':        { cls: 'ds-bot',    label: '🤖 Бот отвечает' },
+  'bot-booked': { cls: 'ds-booked', label: '✅ Бот записал' },
+  'need-admin': { cls: 'ds-need',   label: '⚠️ Нужен админ' },
+  'admin':      { cls: 'ds-taken',  label: '👩 Ведёт админ' },
+  'closed':     { cls: 'ds-closed', label: '✓ Закрыт ботом' }
+};
+
+const DIALOGS = [
+  {
+    id: 'd1', channel: 'tg', patientId: 3, initials: 'МК', name: 'Мария Ковальчук',
+    status: 'bot-booked', time: '12:41', unread: false,
+    preview: 'Готово! Записала вас на 24.07…',
+    next: '24.07.2026, 15:00 · д-р Гусев · консультация по имплантации',
+    history: [
+      ['Сегодня', 'Telegram', 'запись на консультацию (бот)'],
+      ['05.02.2026', 'Звонок', 'удаление 4.6'],
+      ['20.01.2026', 'Telegram', 'вопрос об острой боли (бот)']
+    ],
+    messages: [
+      { from: 'patient', text: 'Здравствуйте! Хочу записаться на имплантацию, сколько это будет стоить?', time: '12:36' },
+      { from: 'bot', text: 'Здравствуйте, Мария! 😊 Рады снова вас видеть. Консультация с 3D-снимком — бесплатно, имплант «под ключ» — от 45 000 ₽. Записать вас на бесплатную консультацию к доктору Гусеву?', time: '12:37' },
+      { from: 'patient', text: 'Да, давайте', time: '12:39' },
+      { from: 'bot', text: 'На этой неделе есть окна: четверг 15:00 или суббота 11:00. Какое удобнее?', time: '12:39' },
+      { from: 'patient', text: 'Четверг', time: '12:40' },
+      { from: 'bot', text: 'Готово! ✅ Записала вас на 24.07 в 15:00 к доктору Гусеву — консультация по имплантации. Пришлю напоминание за день. До встречи!', time: '12:41' },
+      { from: 'system', kind: 'booked', text: '🤖 Запись создана в МИС · 24.07.2026 15:00 · Гусев А. В. · Консультация' }
+    ]
+  },
+  {
+    id: 'd2', channel: 'web', patientId: null, initials: '?', name: 'Посетитель сайта',
+    status: 'need-admin', time: '12:38', unread: true,
+    preview: 'Можно ли импланты при диабете и остеопорозе?',
+    messages: [
+      { from: 'patient', text: 'Здравствуйте! Можно ли ставить импланты при диабете 2 типа и остеопорозе?', time: '12:37' },
+      { from: 'bot', text: 'Здравствуйте! Спасибо за вопрос. При диабете и остеопорозе имплантация возможна, но требует оценки врача — важно учесть показатели и препараты, которые вы принимаете. Подключаю администратора, чтобы подобрать доктора и всё корректно рассказать. Один момент 🙌', time: '12:38' },
+      { from: 'system', kind: 'need', text: '⚠️ Сложный медицинский вопрос — бот запросил передачу администратору' }
+    ]
+  },
+  {
+    id: 'd3', channel: 'max', patientId: 2, initials: 'ДВ', name: 'Дмитрий Волков',
+    status: 'bot', time: '11:58', unread: false,
+    preview: 'Свободно окно сегодня в 18:30…',
+    next: 'нет активной записи',
+    history: [
+      ['Сегодня', 'MAX', 'острая боль (бот)'],
+      ['27.04.2026', 'Приём', 'лечение кариеса 1.6']
+    ],
+    messages: [
+      { from: 'patient', text: 'Здравствуйте, разболелся зуб слева сверху, можно сегодня попасть?', time: '11:56' },
+      { from: 'bot', text: 'Дмитрий, здравствуйте! Понимаю, острая боль — это неприятно, поможем сегодня. Есть неотложное окно в 18:30 к доктору Орловой. Успеете подъехать?', time: '11:58' }
+    ]
+  },
+  {
+    id: 'd4', channel: 'max', patientId: 4, initials: 'ИР', name: 'Игорь Романов',
+    status: 'bot-booked', time: '10:12', unread: false,
+    preview: 'Перенесла на 25.07 20:00 ✅',
+    next: '25.07.2026, 20:00 · д-р Орлова · постоянная пломба 2.6',
+    history: [
+      ['Сегодня', 'MAX', 'перенос записи (бот)'],
+      ['19.05.2026', 'Приём', 'лечение каналов 2.6']
+    ],
+    messages: [
+      { from: 'patient', text: 'Можно перенести мою запись с четверга на пятницу?', time: '10:10' },
+      { from: 'bot', text: 'Конечно, Игорь! Ваша запись — 24.07 в 19:30, постоянная пломба 2.6. На пятницу 25.07 свободно 19:30 или 20:00. Какое поставить?', time: '10:11' },
+      { from: 'patient', text: '20:00', time: '10:12' },
+      { from: 'bot', text: 'Готово! ✅ Перенесла на 25.07 в 20:00, старую запись отменила. Пришлю напоминание.', time: '10:12' },
+      { from: 'system', kind: 'booked', text: '🤖 Запись изменена в МИС · 25.07.2026 20:00 · Орлова Е. В.' }
+    ]
+  },
+  {
+    id: 'd5', channel: 'tg', patientId: 1, initials: 'АС', name: 'Анна Смирнова',
+    status: 'closed', time: '09:24', unread: false,
+    preview: 'Хорошего дня! 😊',
+    next: '24.07.2026, 10:30 · протезирование',
+    history: [
+      ['Сегодня', 'Telegram', 'вопрос о графике (бот)'],
+      ['14.03.2026', 'Приём', 'лечение кариеса 3.6']
+    ],
+    messages: [
+      { from: 'patient', text: 'Добрый день, до скольки вы сегодня работаете?', time: '09:23' },
+      { from: 'bot', text: 'Здравствуйте, Анна! Сегодня клиника работает до 21:00. Записать вас на удобное время?', time: '09:23' },
+      { from: 'patient', text: 'Нет, спасибо, просто уточнила', time: '09:24' },
+      { from: 'bot', text: 'Хорошего дня! 😊 Будем рады видеть вас.', time: '09:24' }
+    ]
+  }
+];
+
+let activeDialog = null;
+let dialogFilter = 'all';
+
+function renderAssistant() {
+  renderDialogList();
+  if (!activeDialog || !DIALOGS.includes(activeDialog)) activeDialog = DIALOGS[0];
+  openDialog(activeDialog);
+  updateDialogBadge();
+}
+
+function updateDialogBadge() {
+  const n = DIALOGS.filter(d => d.status === 'need-admin').length;
+  const b = $('#navDialogCount');
+  if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; }
+}
+
+function renderDialogList() {
+  const list = $('#dialogList');
+  const items = DIALOGS.filter(d =>
+    dialogFilter === 'all' ? true :
+    dialogFilter === 'need-admin' ? d.status === 'need-admin' :
+    dialogFilter === 'bot' ? (d.status === 'bot' || d.status === 'bot-booked') : true);
+
+  list.innerHTML = items.map(d => {
+    const ch = CHANNELS[d.channel], st = DSTATUS[d.status];
+    return `
+      <div class="dialog-item ${d === activeDialog ? 'active' : ''}" data-id="${d.id}">
+        ${d.unread ? '<span class="di-unread"></span>' : ''}
+        <div class="di-avatar ${d.patientId ? '' : 'unknown'}">${d.initials}</div>
+        <div class="di-main">
+          <div class="di-name"><span class="ch-badge ${ch.cls}">${ch.label}</span>${d.name}</div>
+          <div class="di-preview">${d.preview}</div>
+        </div>
+        <div class="di-right">
+          <span class="di-time">${d.time}</span>
+          <span class="di-status ${st.cls}">${st.label}</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  list.querySelectorAll('.dialog-item').forEach(el =>
+    el.addEventListener('click', () => {
+      const d = DIALOGS.find(x => x.id === el.dataset.id);
+      d.unread = false;
+      activeDialog = d;
+      renderDialogList();
+      openDialog(d);
+    }));
+}
+
+function openDialog(d) {
+  const ch = CHANNELS[d.channel], st = DSTATUS[d.status];
+
+  $('#chatHead').innerHTML = `
+    <div class="di-avatar ${d.patientId ? '' : 'unknown'}">${d.initials}</div>
+    <div class="chat-head-main">
+      <div class="chat-head-name">${d.name}<span class="ch-badge ${ch.cls}">${ch.label}</span></div>
+      <div class="chat-head-sub">${d.patientId ? 'Определён по номеру в МИС' : 'Не найден в МИС — новый контакт'}</div>
+    </div>
+    <span class="di-status ${st.cls}">${st.label}</span>`;
+
+  $('#chatBody').innerHTML = d.messages.map(m => msgHtml(m)).join('');
+  $('#chatBody').scrollTop = $('#chatBody').scrollHeight;
+
+  renderChatFoot(d);
+  renderChatCard(d);
+}
+
+function msgHtml(m) {
+  if (m.from === 'system') {
+    const cls = m.kind === 'booked' ? 'sys-booked' : m.kind === 'taken' ? 'sys-taken' : 'sys-need';
+    return `<div class="msg-system ${cls}">${m.text}</div>`;
+  }
+  if (m.from === 'patient') {
+    return `<div class="msg msg-in">
+      <div class="msg-bubble">${m.text}</div>
+      <div class="msg-time">${m.time || ''}</div></div>`;
+  }
+  const who = m.from === 'bot' ? '🤖 Бот' : '👩 ' + (m.who || 'Елена Ковалёва');
+  return `<div class="msg msg-out ${m.from}">
+    <div class="msg-who">${who}</div>
+    <div class="msg-bubble">${m.text}</div>
+    <div class="msg-time">${m.time || 'сейчас'}</div></div>`;
+}
+
+function renderChatFoot(d) {
+  const foot = $('#chatFoot');
+  if (d.status === 'admin') {
+    foot.innerHTML = `
+      <div class="admin-badge">👩 Вы ведёте диалог · бот приостановлен</div>
+      <div class="admin-input">
+        <input type="text" id="adminMsg" placeholder="Написать пациенту…">
+        <button id="adminSend">Отправить</button>
+      </div>`;
+    $('#adminSend').addEventListener('click', sendAdminMsg);
+    $('#adminMsg').addEventListener('keydown', e => { if (e.key === 'Enter') sendAdminMsg(); });
+  } else {
+    const urgent = d.status === 'need-admin';
+    const note = urgent
+      ? '⚠️ <b>Бот передаёт диалог администратору</b> — сложный вопрос'
+      : d.status === 'closed'
+        ? 'Диалог закрыт ботом. Можно подключиться вручную.'
+        : '🤖 Сейчас отвечает бот. Можно подключиться в любой момент.';
+    foot.innerHTML = `
+      <div class="takeover-bar">
+        <div class="takeover-note">${note}</div>
+        <button class="btn-takeover ${urgent ? 'urgent' : ''}" id="btnTakeover">
+          <img src="assets/icons/headset.png" alt="" style="width:16px;height:16px">Принять диалог
+        </button>
+      </div>`;
+    $('#btnTakeover').addEventListener('click', () => takeOver(d));
+  }
+}
+
+function takeOver(d) {
+  d.messages.push({ from: 'system', kind: 'taken', text: '👩 Елена Ковалёва подключилась к диалогу. Бот приостановлен.' });
+  d.status = 'admin';
+  d.preview = 'Диалог ведёт администратор';
+  renderDialogList();
+  openDialog(d);
+  updateDialogBadge();
+}
+
+function sendAdminMsg() {
+  const input = $('#adminMsg');
+  const text = input.value.trim();
+  if (!text) return;
+  activeDialog.messages.push({ from: 'admin', text, time: 'сейчас' });
+  activeDialog.preview = text;
+  $('#chatBody').innerHTML = activeDialog.messages.map(m => msgHtml(m)).join('');
+  $('#chatBody').scrollTop = $('#chatBody').scrollHeight;
+  renderDialogList();
+  input.value = '';
+  input.focus();
+}
+
+function renderChatCard(d) {
+  const el = $('#chatCard');
+  if (!d.patientId) {
+    el.innerHTML = `<div class="cc-scroll">
+      <div class="cc-head">
+        <div class="di-avatar unknown">?</div>
+        <div><div class="cc-name">Новый контакт</div><div class="cc-sub">${CHANNELS[d.channel].label}</div></div>
+      </div>
+      <span class="cc-mis new">● Не найден в МИС</span>
+      <div class="cc-newnote">Пациент не идентифицирован по номеру. После ответа администратора бот уточнит контакты и предложит создать карточку в МИС.</div>
+    </div>`;
+    return;
+  }
+  const p = byId(d.patientId);
+  el.innerHTML = `<div class="cc-scroll">
+    <div class="cc-head">
+      <div class="di-avatar">${p.initials}</div>
+      <div><div class="cc-name">${p.name}</div><div class="cc-sub">${p.phone}</div></div>
+    </div>
+    <span class="cc-mis found">● Найден в МИС</span>
+    <div class="cc-block">
+      <div class="cc-label">Ближайшая запись</div>
+      <div class="cc-next">${d.next && d.next !== 'нет активной записи'
+        ? '📅 <b>' + d.next + '</b>'
+        : 'Активной записи нет'}</div>
+    </div>
+    <div class="cc-block">
+      <div class="cc-label">Лечение</div>
+      <div class="cc-treat">${p.treat}</div>
+    </div>
+    <div class="cc-block">
+      <div class="cc-label">История обращений</div>
+      <ul class="cc-hist">${d.history.map(h =>
+        `<li><span>${h[0]} · ${h[1]}</span> — ${h[2]}</li>`).join('')}</ul>
+    </div>
+    <button class="btn-ghost cc-open" data-id="${p.id}">
+      <img src="assets/icons/doc.png" alt="">Открыть карточку в МИС
+    </button>
+  </div>`;
+  const btn = el.querySelector('.cc-open');
+  if (btn) btn.addEventListener('click', () => openCard(byId(+btn.dataset.id)));
+}
+
+document.querySelectorAll('.itab').forEach(tab =>
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.itab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    dialogFilter = tab.dataset.filter;
+    renderDialogList();
+  }));
+
 /* ---------- Инициализация ---------- */
 $('#todayLabel').textContent = fmtToday();
 renderTasks();
 renderPatients();
 renderCharts();
+renderAssistant();

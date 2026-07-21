@@ -27,6 +27,7 @@
     </div>
 
     <nav class="side-nav">
+      <div class="side-divider">Возврат пациентов</div>
       <a href="#" class="side-link active" data-screen="day">
         <img src="assets/icons/calendar2.png" alt="">
         <span>Мой день</span>
@@ -40,15 +41,22 @@
         <img src="assets/icons/chart.png" alt="">
         <span>Дашборд руководителя</span>
       </a>
+
+      <div class="side-divider">Умный помощник 24/7</div>
+      <a href="#" class="side-link" data-screen="assistant">
+        <img src="assets/icons/robot.png" alt="">
+        <span>Диалоги</span>
+        <b class="side-count" id="navDialogCount">1</b>
+      </a>
+      <a href="#" class="side-link" data-screen="channels">
+        <img src="assets/icons/chat.png" alt="">
+        <span>Каналы</span>
+      </a>
+
+      <div class="side-divider">Общее</div>
       <a href="#" class="side-link" data-screen="integration">
         <img src="assets/icons/globe.png" alt="">
         <span>Интеграция с МИС</span>
-      </a>
-
-      <div class="side-divider">Другие модули</div>
-      <a href="#" class="side-link side-link-dim">
-        <img src="assets/icons/robot.png" alt="">
-        <span>Умный помощник 24/7</span>
       </a>
       <a href="#" class="side-link side-link-dim">
         <img src="assets/icons/headset.png" alt="">
@@ -341,6 +349,114 @@
     </section>
 
   </main>
+
+    <!-- ======== ЭКРАН 5. Умный помощник: диалоги ======== -->
+    <section class="screen hidden" id="screen-assistant">
+      <header class="topbar">
+        <div>
+          <h1>Умный помощник 24/7</h1>
+          <p class="topbar-sub">ИИ-бот отвечает пациентам в Telegram, MAX и на сайте, сам записывает в МИС, а сложные вопросы передаёт администратору</p>
+        </div>
+        <div class="topbar-right">
+          <div class="sync-chip"><span class="sync-dot"></span>Бот на связи · среднее время ответа 4 сек</div>
+        </div>
+      </header>
+
+      <div class="inbox">
+        <!-- список диалогов -->
+        <div class="inbox-col dialog-list-col">
+          <div class="inbox-tabs">
+            <button class="itab active" data-filter="all">Все</button>
+            <button class="itab" data-filter="need-admin">Нужен админ <b>1</b></button>
+            <button class="itab" data-filter="bot">Ведёт бот</button>
+          </div>
+          <div class="dialog-list" id="dialogList"></div>
+        </div>
+
+        <!-- активный чат -->
+        <div class="inbox-col chat-col">
+          <div class="chat-head" id="chatHead"></div>
+          <div class="chat-body" id="chatBody"></div>
+          <div class="chat-foot" id="chatFoot"></div>
+        </div>
+
+        <!-- карточка пациента из МИС -->
+        <div class="inbox-col chat-card-col" id="chatCard"></div>
+      </div>
+    </section>
+
+    <!-- ======== ЭКРАН 6. Каналы ======== -->
+    <section class="screen hidden" id="screen-channels">
+      <header class="topbar">
+        <div>
+          <h1>Каналы</h1>
+          <p class="topbar-sub">Где бот общается с пациентами. Подключение — в один клик, все диалоги стекаются в общий инбокс</p>
+        </div>
+      </header>
+
+      <div class="channel-grid">
+        <div class="channel-card">
+          <div class="channel-top">
+            <span class="ch-badge ch-tg">Telegram</span>
+            <span class="ch-status"><span class="sync-dot"></span>Подключён</span>
+          </div>
+          <div class="channel-handle">@denta_plus_bot</div>
+          <div class="channel-stats">
+            <div><b>34</b><span>диалога / мес</span></div>
+            <div><b>21</b><span>записи создано</span></div>
+            <div><b>4 сек</b><span>ответ бота</span></div>
+          </div>
+          <button class="btn-ghost channel-btn">Настроить</button>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-top">
+            <span class="ch-badge ch-max">MAX</span>
+            <span class="ch-status"><span class="sync-dot"></span>Подключён</span>
+          </div>
+          <div class="channel-handle">Стоматология «Дента+»</div>
+          <div class="channel-stats">
+            <div><b>12</b><span>диалогов / мес</span></div>
+            <div><b>7</b><span>записей создано</span></div>
+            <div><b>5 сек</b><span>ответ бота</span></div>
+          </div>
+          <button class="btn-ghost channel-btn">Настроить</button>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-top">
+            <span class="ch-badge ch-web">Сайт</span>
+            <span class="ch-status"><span class="sync-dot"></span>Подключён</span>
+          </div>
+          <div class="channel-handle">Виджет на denta-plus.ru</div>
+          <div class="channel-stats">
+            <div><b>21</b><span>диалог / мес</span></div>
+            <div><b>9</b><span>записей создано</span></div>
+            <div><b>3 сек</b><span>ответ бота</span></div>
+          </div>
+          <button class="btn-ghost channel-btn">Настроить</button>
+        </div>
+
+        <div class="channel-card channel-add">
+          <div class="channel-add-inner">
+            <div class="channel-add-plus">+</div>
+            <div class="channel-add-title">Добавить канал</div>
+            <div class="channel-add-sub">WhatsApp, ВКонтакте, Авито — скоро</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Поведение бота</h2></div>
+        <div class="bot-settings">
+          <div class="bot-set"><span>Часы работы бота</span><b>Круглосуточно, без выходных</b></div>
+          <div class="bot-set"><span>Запись в МИС</span><b class="toggle on">включена</b></div>
+          <div class="bot-set"><span>Передавать администратору</span><b>Сложные медицинские вопросы, жалобы, запрос пациента</b></div>
+          <div class="bot-set"><span>Рабочие часы администраторов</span><b>09:00–21:00 (вне часов бот принимает заявку)</b></div>
+          <div class="bot-set"><span>Тон общения</span><b>Дружелюбный, на «вы», с эмодзи</b></div>
+        </div>
+      </div>
+    </section>
 
   <!-- ============ Карточка пациента (на весь экран) ============ -->
   <div class="pmodal hidden" id="pmodal">
