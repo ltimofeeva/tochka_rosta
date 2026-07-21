@@ -99,6 +99,7 @@ body {
 
 /* ---------- Основная область ---------- */
 .main { flex: 1; padding: 26px 32px 60px; max-width: 1200px; }
+.main.main-wide { max-width: none; }
 
 .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; gap: 14px; }
 .topbar h1 { font-size: 26px; line-height: 1.2; }
@@ -722,7 +723,7 @@ body {
 .cc-newnote { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
 
 /* ---------- Каналы ---------- */
-.channel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+.channel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
 .channel-card {
   background: var(--card); border: 1px solid var(--line);
   border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px;

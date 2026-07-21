@@ -247,6 +247,7 @@ document.querySelectorAll('.side-link[data-screen]').forEach(link => {
     link.classList.add('active');
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
     $('#screen-' + link.dataset.screen).classList.remove('hidden');
+    document.querySelector('.main').classList.toggle('main-wide', link.dataset.screen === 'channels');
     window.scrollTo(0, 0);
   });
 });
