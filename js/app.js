@@ -1193,11 +1193,17 @@ function openCall(c) {
         <div class="fix-how"><b>Как надо:</b> ${m[1]}</div></div>`).join('')
     : '<div class="fix-empty">✅ Грубых ошибок нет. Звонок можно использовать как эталон для обучения.</div>';
 
+  $('#callBackdrop').classList.remove('hidden');
   $('#callmodal').classList.remove('hidden');
   $('#callmodal').scrollTop = 0;
 }
 
-$('#callClose').addEventListener('click', () => $('#callmodal').classList.add('hidden'));
+function closeCall() {
+  $('#callmodal').classList.add('hidden');
+  $('#callBackdrop').classList.add('hidden');
+}
+$('#callClose').addEventListener('click', closeCall);
+$('#callBackdrop').addEventListener('click', closeCall);
 
 document.querySelectorAll('.ctab').forEach(tab =>
   tab.addEventListener('click', () => {

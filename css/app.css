@@ -808,13 +808,38 @@ body {
 }
 .call-open:hover { background: var(--blue-deep); }
 
-/* ---------- Разбор звонка ---------- */
-.call-score-wrap { text-align: center; margin-right: 40px; }
-.call-score-big { font-size: 34px; font-weight: 700; line-height: 1; }
+/* ---------- Разбор звонка: боковая панель ---------- */
+.call-backdrop { position: fixed; inset: 0; background: rgba(18,35,90,.45); z-index: 110; }
+.call-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 120;
+  width: 640px; max-width: 96vw;
+  background: var(--bg); box-shadow: -12px 0 40px rgba(18,35,90,.3);
+  padding: 22px 22px 40px; overflow-y: auto;
+  animation: slideIn .3s ease;
+}
+.call-close { position: fixed; z-index: 140; }
+.call-dhead {
+  display: flex; gap: 14px; align-items: center;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; margin-bottom: 16px;
+}
+.call-dhead-main { flex: 1; min-width: 0; }
+.call-dhead h2 { font-size: 18px; line-height: 1.2; }
+.call-dhead .drawer-phone { font-size: 12px; }
+.call-score-wrap { text-align: center; margin-right: 34px; flex-shrink: 0; }
+.call-score-big { font-size: 30px; font-weight: 700; line-height: 1; }
 .call-score-cap { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; margin-top: 3px; }
+.call-drawer .drawer-section {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 18px; margin-bottom: 14px;
+}
+.call-drawer .transcript { max-height: none; }
 
-.call-player-panel { padding: 16px 20px; }
-.player { display: flex; align-items: center; gap: 14px; }
+.player {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 18px; margin-bottom: 14px;
+}
 .player-play {
   width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
   background: var(--blue); color: #fff; border: 0; cursor: pointer; font-size: 15px;
@@ -825,6 +850,7 @@ body {
 .player-time { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 
 .call-metrics { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.call-drawer .call-metrics { margin: 0 0 14px; }
 .metric {
   display: flex; flex-direction: column; gap: 2px;
   background: var(--bg); border: 1px solid var(--line); border-radius: 10px;

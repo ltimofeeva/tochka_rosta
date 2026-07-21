@@ -701,63 +701,51 @@
     </div>
   </aside>
 
-  <!-- ============ Разбор звонка (на весь экран) ============ -->
-  <div class="pmodal hidden" id="callmodal">
-    <button class="drawer-close" id="callClose">✕</button>
-    <div class="pmodal-inner">
+  <!-- ============ Разбор звонка (боковая панель справа) ============ -->
+  <div class="call-backdrop hidden" id="callBackdrop"></div>
+  <aside class="call-drawer hidden" id="callmodal">
+    <button class="drawer-close call-close" id="callClose">✕</button>
 
-      <header class="pmodal-head">
-        <div class="p-avatar big" id="callAvatar">?</div>
-        <div class="pmodal-title">
-          <h2 id="callTitle">—</h2>
-          <div class="drawer-phone" id="callMeta">—</div>
-        </div>
-        <div class="call-score-wrap">
-          <div class="call-score-big" id="callScoreBig">0</div>
-          <div class="call-score-cap">балл работы</div>
-        </div>
-      </header>
-
-      <!-- плеер + метрики -->
-      <div class="panel call-player-panel">
-        <div class="player">
-          <button class="player-play">▶</button>
-          <div class="waveform" id="callWave"></div>
-          <div class="player-time" id="callDur">0:00</div>
-        </div>
-        <div class="call-metrics" id="callMetrics"></div>
+    <header class="call-dhead">
+      <div class="p-avatar big" id="callAvatar">?</div>
+      <div class="call-dhead-main">
+        <h2 id="callTitle">—</h2>
+        <div class="drawer-phone" id="callMeta">—</div>
       </div>
-
-      <div class="pmodal-grid">
-        <div class="pmodal-col">
-          <div class="drawer-section">
-            <h3><img src="assets/icons/chat.png" alt="" class="ico-mini">Транскрипт с разметкой ИИ</h3>
-            <div class="transcript" id="callTranscript"></div>
-          </div>
-        </div>
-
-        <div class="pmodal-col">
-          <div class="drawer-section">
-            <h3><img src="assets/icons/check.png" alt="" class="ico-mini">Оценка по критериям</h3>
-            <div class="criteria" id="callCriteria"></div>
-          </div>
-          <div class="drawer-section">
-            <h3><img src="assets/icons/chart.png" alt="" class="ico-mini">Движение по воронке</h3>
-            <div class="funnel-steps" id="callFunnel"></div>
-          </div>
-          <div class="drawer-section">
-            <h3><img src="assets/icons/heart.png" alt="" class="ico-mini">Настроение клиента</h3>
-            <div class="sentiment-track" id="callSent"></div>
-          </div>
-          <div class="drawer-section">
-            <h3><img src="assets/icons/bolt.png" alt="" class="ico-mini">Ошибки и как исправить</h3>
-            <div id="callMistakes"></div>
-          </div>
-        </div>
+      <div class="call-score-wrap">
+        <div class="call-score-big" id="callScoreBig">0</div>
+        <div class="call-score-cap">балл</div>
       </div>
+    </header>
 
+    <div class="player">
+      <button class="player-play">▶</button>
+      <div class="waveform" id="callWave"></div>
+      <div class="player-time" id="callDur">0:00</div>
     </div>
-  </div>
+    <div class="call-metrics" id="callMetrics"></div>
+
+    <div class="drawer-section">
+      <h3><img src="assets/icons/chat.png" alt="" class="ico-mini">Транскрипт с разметкой ИИ</h3>
+      <div class="transcript" id="callTranscript"></div>
+    </div>
+    <div class="drawer-section">
+      <h3><img src="assets/icons/check.png" alt="" class="ico-mini">Оценка по критериям</h3>
+      <div class="criteria" id="callCriteria"></div>
+    </div>
+    <div class="drawer-section">
+      <h3><img src="assets/icons/chart.png" alt="" class="ico-mini">Движение по воронке</h3>
+      <div class="funnel-steps" id="callFunnel"></div>
+    </div>
+    <div class="drawer-section">
+      <h3><img src="assets/icons/heart.png" alt="" class="ico-mini">Настроение клиента</h3>
+      <div class="sentiment-track" id="callSent"></div>
+    </div>
+    <div class="drawer-section">
+      <h3><img src="assets/icons/bolt.png" alt="" class="ico-mini">Ошибки и как исправить</h3>
+      <div id="callMistakes"></div>
+    </div>
+  </aside>
 
 <script src="js/app.js?v=2"></script>
 </body>
